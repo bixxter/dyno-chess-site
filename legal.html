@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy, Terms &amp; Refunds — Dyno Chess</title>
+<meta name="description" content="Privacy policy, terms of sale and refund policy for Dyno Chess.">
+<meta name="robots" content="index, follow">
+<style>
+/* Same tokens as index.html. Duplicated rather than shared so each page
+   stays a single self-contained file with no external requests. */
+:root {
+  --paper: #fbf6ee; --ink: #241a12; --ink-soft: #6d5c4d; --ink-faint: #a3948a;
+  --line: #e3d8c6; --mark: #66e680;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #17120e; --ink: #f6efe4; --ink-soft: #b3a294; --ink-faint: #7d6f64; --line: #322820; }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--sans); font-size: 17px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid #66b3ff; outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.5rem; }
+.nav { border-bottom: 1px solid var(--line); }
+.nav-in { display: flex; align-items: center; gap: .75rem; padding: 1rem 0; }
+.brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; font-weight: 700; letter-spacing: -.02em; }
+.brand svg { width: 30px; height: 30px; border-radius: 9px; background: var(--ink); padding: 4px; }
+.nav-sp { flex: 1; }
+.nav a.txt { text-decoration: none; color: var(--ink-soft); font-size: .95rem; }
+.nav a.txt:hover { color: var(--ink); }
+
+h1 { font-size: clamp(2.1rem, 6vw, 3rem); letter-spacing: -.03em; font-weight: 800; margin: 3rem 0 .5rem; }
+h2 {
+  font-size: 1.45rem; letter-spacing: -.02em; font-weight: 700;
+  margin: 3.5rem 0 .25rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
+  scroll-margin-top: 1.5rem;
+}
+h3 { font-size: 1.02rem; font-weight: 700; margin: 1.75rem 0 .25rem; }
+p, li { color: var(--ink-soft); }
+p { margin: .7rem 0 0; }
+ul { margin: .7rem 0 0; padding-left: 1.2rem; }
+li { margin: .3rem 0; }
+b, strong { color: var(--ink); font-weight: 600; }
+code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,.13); padding: .1rem .35rem; border-radius: 5px; }
+.updated { font-family: var(--mono); font-size: .78rem; color: var(--ink-faint); letter-spacing: .01em; }
+.toc { margin: 2rem 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: .5rem .9rem; font-size: .95rem; }
+.toc a { color: var(--ink-soft); }
+.summary {
+  margin-top: 2rem; border: 1px solid var(--line); border-radius: .875rem; padding: 1.1rem 1.25rem;
+}
+.summary p { margin: 0; }
+.summary p + p { margin-top: .5rem; }
+.legal { border-top: 1px solid var(--line); margin-top: 4rem; padding: 1.5rem 0 3rem; font-size: .82rem; color: var(--ink-faint); display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
+.legal a { color: inherit; }
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-in">
+  <a class="brand" href="./"><span id="brandIcon"></span><span>Dyno Chess</span></a>
+  <span class="nav-sp"></span>
+  <a class="txt" href="./">Back to the app</a>
+</div></nav>
+
+<main class="wrap">
+  <h1>Privacy, terms &amp; refunds</h1>
+  <p class="updated">Last updated 17 August 2026</p>
+
+  <ul class="toc">
+    <li><a href="#privacy">Privacy policy</a></li>
+    <li><a href="#terms">Terms of sale</a></li>
+    <li><a href="#refunds">Refund policy</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+
+  <div class="summary">
+    <p><b>The short version.</b> The app cannot collect anything about you — it ships without
+    the network entitlement, so it has no way to send data anywhere. Everything it knows
+    lives on your Mac.</p>
+    <p>Buying is the only part that involves anyone else, because someone has to take the
+    payment. Refunds are 14 days, no reason needed.</p>
+  </div>
+
+  <h2 id="privacy">Privacy policy</h2>
+  <p>Dyno Chess is operated by <b>Asatulla Dadabaev</b>, a sole trader based in Kazakhstan
+  ("we", "us"). This policy covers the Dyno Chess application, this website, and buying a
+  licence.</p>
+
+  <h3>The application collects nothing</h3>
+  <p>This is not a promise you have to take on faith. The app is built without the
+  <code>com.apple.security.network.client</code> entitlement, which means macOS itself
+  prevents it from opening a network connection. You can verify this on your own machine
+  before trusting a word of this page:</p>
+  <p><code>codesign -d --entitlements :- "Dyno Chess.app"</code></p>
+  <p>There is no account, no sign-in, no telemetry, no analytics and no crash reporting.
+  Your games, move history, PGN files, settings and licence key are stored only in the
+  app's own container on your Mac. We never receive them and have no way to.</p>
+  <p>Licence keys are verified by checking a cryptographic signature locally. Activating a
+  licence does not contact us or anyone else.</p>
+
+  <h3>This website</h3>
+  <p>This site is a static page hosted on <b>GitHub Pages</b>. We set no cookies, run no
+  analytics and load nothing from third parties. GitHub records standard server logs,
+  including your IP address, in the course of serving the page; that processing is
+  governed by the
+  <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub
+  Privacy Statement</a>. We do not have access to those logs.</p>
+
+  <h3>Buying a licence</h3>
+  <p>Payments are processed by <b>Paddle.com Market Ltd</b>, which acts as the merchant of
+  record and is the seller of record for your purchase. Paddle collects the information it
+  needs to take payment and meet its tax obligations — typically your name, email address,
+  billing country and payment details. We never see or store your card details. Paddle's
+  handling of that data is governed by the
+  <a href="https://www.paddle.com/legal/privacy">Paddle Privacy Policy</a>.</p>
+  <p>From Paddle we receive your <b>email address and an order reference</b>. We use them
+  for exactly two things: issuing your licence key, and re-sending it if you lose it. We do
+  not send marketing email, and we do not sell, rent or share this data with anyone.</p>
+
+  <h3>Support email</h3>
+  <p>If you email us, that correspondence sits in our mailbox so we can answer you and
+  refer back to it later. Nothing more is done with it.</p>
+
+  <h3>Your rights</h3>
+  <p>You can ask what we hold about you, ask for it to be corrected, or ask for it to be
+  deleted. Write to <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a> and we
+  will act within 30 days. Deleting your purchase record means we can no longer re-issue a
+  lost licence key, so keep a copy first. For data held by Paddle, contact Paddle
+  directly.</p>
+
+  <h2 id="terms">Terms of sale</h2>
+  <p>These terms apply when you buy a Dyno Chess Pro licence. The seller is <b>Asatulla
+  Dadabaev</b>, sole trader, Kazakhstan. Purchases are transacted by Paddle.com Market Ltd
+  as merchant of record, and Paddle's
+  <a href="https://www.paddle.com/legal/checkout-buyer-terms">buyer terms</a> also apply to
+  the transaction itself.</p>
+
+  <h3>What you are buying</h3>
+  <p>A one-time licence to the Pro features of Dyno Chess. Payment is once, not recurring.
+  There is no subscription to cancel.</p>
+  <ul>
+    <li>The licence covers <b>up to three Macs</b> that you own or control.</li>
+    <li>It is personal to you and may not be resold, sublicensed, or shared publicly.</li>
+    <li>It includes <b>every update to the version you bought</b>, at no extra cost. A
+      future major version may be a separate purchase; if so, that will be stated plainly
+      before you buy it, and your existing licence will keep working on the version it was
+      issued for.</li>
+  </ul>
+  <p>The free tier of Dyno Chess remains free and fully functional whether or not you ever
+  buy anything. The 14-day trial of Pro starts at first launch and, when it ends, the app
+  becomes the free version rather than stopping.</p>
+
+  <h3>Delivery</h3>
+  <p>Your licence key is emailed to the address given at checkout, normally within a few
+  minutes. If it has not arrived within a few hours, check your spam folder and then write
+  to us; we will re-issue it.</p>
+
+  <h3>Stockfish and the GPL</h3>
+  <p>Dyno Chess bundles the <b>Stockfish</b> chess engine, which is free software licensed
+  under the <b>GNU General Public License version 3</b>. Stockfish runs as a separate
+  process communicating over the UCI protocol; it is not linked into the application. The
+  full GPLv3 text ships inside the disk image alongside a link to the exact source revision
+  the bundled binary was built from, and nothing in these terms restricts any right the
+  GPLv3 grants you over that engine.</p>
+
+  <h3>What we do not promise</h3>
+  <p>The software is provided "as is". To the fullest extent permitted by law we disclaim
+  implied warranties of merchantability and fitness for a particular purpose, and we do not
+  warrant that the software will be uninterrupted or error-free. Our total liability
+  arising out of or in connection with the software or these terms is limited to the amount
+  you actually paid for the licence.</p>
+  <p>Nothing here limits liability that cannot be limited by law, and nothing here affects
+  any statutory consumer rights you have in your own country.</p>
+
+  <h3>Governing law</h3>
+  <p>These terms are governed by the laws of the Republic of Kazakhstan, without regard to
+  conflict-of-law rules.</p>
+
+  <h3>Changes</h3>
+  <p>We may update these terms for future sales. The version in force for your purchase is
+  the one published on the day you bought, and the date at the top of this page tells you
+  when it last changed. We will not apply a later change retroactively to a licence you
+  already own.</p>
+
+  <h2 id="refunds">Refund policy</h2>
+  <p><b>14 days, no reason required.</b> If Dyno Chess is not what you wanted, write to
+  <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a> within 14 days of purchase,
+  or request the refund through Paddle directly, and we will refund the purchase in full.
+  You do not have to explain yourself and we will not try to talk you out of it.</p>
+  <p>Refunds are issued by Paddle to the original payment method. Depending on your bank
+  the money typically appears within 5–10 business days.</p>
+  <p>We ask that you stop using the licence key after a refund. Because licences are
+  verified offline, a refunded key keeps working, which means this is a request rather than
+  something we enforce — we would rather trust people than build software that polices
+  them.</p>
+  <p>Requests after 14 days are not guaranteed, but write to us anyway. If the app is
+  broken for you, we would rather fix it or refund you than have you stuck with something
+  that does not work.</p>
+
+  <h2 id="contact">Contact</h2>
+  <p>Asatulla Dadabaev, sole trader, Kazakhstan.<br>
+  Email: <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a></p>
+  <p>Support, refunds, licence recovery, privacy requests and anything else all go to that
+  address, and it is read by a person.</p>
+</main>
+
+<div class="wrap legal">
+  <span>© 2026 Dyno Chess</span>
+  <a href="./">Home</a>
+  <a href="#privacy">Privacy</a>
+  <a href="#terms">Terms</a>
+  <a href="#refunds">Refunds</a>
+  <a href="mailto:debixxter@gmail.com">Contact</a>
+  <span>Stockfish is GPLv3 and ships with its licence.</span>
+</div>
+
+<script>
+"use strict";
+/* The same 11x10 pixel grid as MascotArt.swift, so every page draws the
+   same animal. 1 = body, 2 = underside, 3 = eye. */
+const DINO = [
+  [0,0,0,0,0,0,0,1,1,1,0],
+  [0,0,0,0,0,0,0,1,3,1,1],
+  [0,0,0,0,0,0,0,1,1,1,1],
+  [1,0,0,0,1,1,1,1,1,0,0],
+  [1,1,0,1,1,1,1,1,0,0,0],
+  [0,1,1,1,1,1,1,0,0,0,0],
+  [0,0,1,1,1,1,1,0,0,0,0],
+  [0,0,0,1,2,2,1,0,0,0,0],
+  [0,0,0,1,0,0,1,0,0,0,0],
+  [0,0,0,1,1,0,1,1,0,0,0],
+];
+let r = "";
+for (let y = 0; y < DINO.length; y++) for (let x = 0; x < DINO[y].length; x++) {
+  const c = DINO[y][x]; if (!c) continue;
+  r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${c === 3 ? "#fff" : "#66e680"}" opacity="${c === 2 ? ".55" : "1"}"/>`;
+}
+document.getElementById("brandIcon").innerHTML =
+  `<svg viewBox="0 0 11 10" width="22" height="20" shape-rendering="crispEdges" style="display:block" aria-hidden="true">${r}</svg>`;
+</script>
+</body>
+</html>
