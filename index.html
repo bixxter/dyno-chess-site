@@ -95,6 +95,14 @@ a { color: inherit; }
 }
 .btn:hover { transform: translateY(-1px); opacity: .92; }
 .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+/* Pre-launch: the download is not a link yet, and a button that looks
+   clickable but goes nowhere is the one thing a payment reviewer is
+   guaranteed to click. */
+.btn-soon {
+  background: transparent; color: var(--ink-faint); border-color: var(--line);
+  border-style: dashed; cursor: default;
+}
+.btn-soon:hover { transform: none; opacity: 1; }
 .btn .chip {
   font-family: var(--mono); font-size: .8rem; background: var(--ink); color: var(--paper);
   padding: .15rem .45rem; border-radius: 7px;
@@ -272,19 +280,19 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 
 <nav class="nav" id="nav"><div class="wrap nav-in">
   <a class="brand" href="#top"><span id="brandIcon"></span><span>Dyno Chess</span></a>
-  <a class="pill" href="#changelog">v0.2.0</a>
+  <span class="pill">v0.2.0</span>
   <span class="nav-sp"></span>
   <a class="txt" href="#price">Pricing</a>
   <a class="txt" href="#faq">FAQ</a>
-  <a class="btn" href="#download">Download</a>
+  <span class="btn btn-soon">Coming soon</span>
 </div></nav>
 
 <header class="hero wrap" id="top">
   <h1>Chess that doesn't <mark>steal</mark> your day.</h1>
   <p class="lede">It lives in your MacBook's notch. Hover, play a move, get back to work.</p>
   <div class="cta-row">
-    <a class="btn" href="#download">Download for Mac</a>
-    <a class="btn btn-ghost" href="#price">Buy Pro <span class="chip">$14.99</span></a>
+    <span class="btn btn-soon">Download for Mac — coming soon</span>
+    <a class="btn btn-ghost" href="#price">See what Pro costs <span class="chip">$14.99</span></a>
   </div>
   <ul class="facts">
     <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>No network access</li>
@@ -375,7 +383,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
       </ul>
       <p class="anchor">Chess.com Diamond is $119.99 a year. Every year.</p>
       <div class="cta-row" style="margin-top:1.25rem">
-        <a class="btn" href="#download" id="buy">Buy Pro <span class="chip">$14.99</span></a>
+        <span class="btn btn-soon" id="buy">Coming soon</span>
         <span style="font-size:.85rem;color:var(--ink-faint)">14 days free, then it keeps working as Free.</span>
       </div>
     </div>
@@ -401,7 +409,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     <p>Yes, within 14 days, no reason required. Email <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a> and it gets refunded in full — you don't have to explain yourself. The <a href="legal.html#refunds">refund policy</a> spells out the details.</p></details>
 
   <details><summary>Who am I buying from, and how do I get help?</summary>
-    <p>Dyno Chess is made and sold by Asatulla Dadabaev, a sole trader in Kazakhstan — one person, not a company. Support, refunds and lost licence keys all go to <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a>, and it's read by a person. The <a href="legal.html#privacy">privacy policy</a> and <a href="legal.html#terms">terms of sale</a> are on one page.</p></details>
+    <p>Dyno Chess is made and sold by Asatulla Dadabaev — one person, not a company. Support, refunds and lost licence keys all go to <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a>, and it's read by a person. The <a href="legal.html#privacy">privacy policy</a> and <a href="legal.html#terms">terms of sale</a> are on one page.</p></details>
 
   <details><summary>Which engine is it, and is the source available?</summary>
     <p>Stockfish, running as a separate process over UCI, exactly as its licence intends. The full GPLv3 text ships inside the disk image alongside a link to the exact source revision the bundled binary was built from.</p></details>
@@ -411,14 +419,15 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 </section>
 
 <footer class="foot wrap" id="download">
-  <div class="cta-row" style="margin-bottom:2rem">
-    <a class="btn" href="#">Download for Mac</a>
-    <a class="btn btn-ghost" href="#price">Buy Pro <span class="chip">$14.99</span></a>
+  <div class="cta-row" style="margin-bottom:1rem">
+    <span class="btn btn-soon">Download for Mac — coming soon</span>
+    <a class="btn btn-ghost" href="mailto:debixxter@gmail.com?subject=Dyno%20Chess%20—%20tell%20me%20when%20it%20ships">Email me when it ships</a>
   </div>
-  <div class="foot-row">
-    <a class="sq-btn" href="#" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7 8 8.2 12h-6.4l-5-7.3L5.9 22H2.8l7.5-8.6L2.4 2h6.6l4.5 6.7zm-1.1 18h1.7L7.3 3.8H5.5z"/></svg></a>
-    <a class="sq-btn" href="#" aria-label="Changelog" id="changelog"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg></a>
-  </div>
+  <p style="margin:0;font-size:.9rem;color:var(--ink-faint);max-width:46ch">
+    The Mac build is being notarized. Write to
+    <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a> and you'll get a line
+    the day it's downloadable — nothing else, ever.
+  </p>
   <p class="wordmark">Dyno Chess</p>
 </footer>
 <div class="wrap legal">
