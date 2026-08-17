@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dyno Chess — chess that lives in your MacBook's notch</title>
+<meta name="description" content="A full chess game in your MacBook's notch. Hover to play a move against nine opponents, then get back to work. Native, offline, no account.">
+<meta property="og:title" content="Dyno Chess">
+<meta property="og:description" content="Chess that doesn't steal your day. It lives in your MacBook's notch.">
+<meta property="og:type" content="website">
+<style>
+/* ── tokens ─────────────────────────────────────────────────────────────
+   Every colour here is either a chess board square or a state colour read
+   straight out of PixelMascotView.swift, so the site and the app agree. */
+:root {
+  --paper:      #fbf6ee;
+  --paper-2:    #f3ebdd;
+  --ink:        #241a12;
+  --ink-soft:   #6d5c4d;
+  --ink-faint:  #a3948a;
+  --line:       #e3d8c6;
+  --sq-light:   #efdfc6;
+  --sq-dark:    #8b6a4f;
+  --dino-idle:  #66b3ff;
+  --dino-play:  #66e680;
+  --dino-lost:  #ff6666;
+  --mark:       #66e680;
+  --btn-bg:     #241a12;
+  --btn-fg:     #fbf6ee;
+  --card:       #ffffff;
+  --shadow:     0 1px 2px rgba(36,26,18,.06), 0 12px 40px -12px rgba(36,26,18,.18);
+  --radius-lg:  2.5rem;
+  --radius:     .875rem;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #17120e; --paper-2: #201913; --ink: #f6efe4; --ink-soft: #b3a294;
+    --ink-faint: #7d6f64; --line: #322820; --card: #201913;
+    --btn-bg: #f6efe4; --btn-fg: #17120e;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 16px 50px -12px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #17120e; --paper-2: #201913; --ink: #f6efe4; --ink-soft: #b3a294;
+  --ink-faint: #7d6f64; --line: #322820; --card: #201913;
+  --btn-bg: #f6efe4; --btn-fg: #17120e;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 16px 50px -12px rgba(0,0,0,.7);
+}
+:root[data-theme="light"] {
+  --paper: #fbf6ee; --paper-2: #f3ebdd; --ink: #241a12; --ink-soft: #6d5c4d;
+  --ink-faint: #a3948a; --line: #e3d8c6; --card: #ffffff;
+  --btn-bg: #241a12; --btn-fg: #fbf6ee;
+  --shadow: 0 1px 2px rgba(36,26,18,.06), 0 12px 40px -12px rgba(36,26,18,.18);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--sans); font-size: 17px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--dino-idle); outline-offset: 3px; border-radius: 6px; }
+
+.wrap { max-width: 80rem; margin: 0 auto; padding: 0 1.5rem; }
+@media (min-width: 1280px) { .wrap { padding: 0 4rem; } }
+
+/* ── nav ─────────────────────────────────────────────────────────────── */
+.nav {
+  position: sticky; top: 0; z-index: 40; background: var(--paper);
+  border-bottom: 1px solid transparent; transition: border-color .3s;
+}
+.nav.is-stuck { border-bottom-color: var(--line); }
+.nav-in { display: flex; align-items: center; gap: .75rem; padding: 1rem 0; }
+.brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; font-weight: 700; letter-spacing: -.02em; }
+.brand svg { width: 30px; height: 30px; border-radius: 9px; background: var(--ink); padding: 4px; }
+.pill {
+  font-family: var(--mono); font-size: .72rem; letter-spacing: .02em;
+  padding: .2rem .5rem; border: 1px solid var(--line); border-radius: 999px;
+  color: var(--ink-soft); text-decoration: none;
+}
+.nav-sp { flex: 1; }
+.nav a.txt { text-decoration: none; color: var(--ink-soft); font-size: .95rem; }
+.nav a.txt:hover { color: var(--ink); }
+
+/* ── buttons ─────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: .6rem; text-decoration: none;
+  background: var(--btn-bg); color: var(--btn-fg); font-weight: 600; font-size: .98rem;
+  padding: .7rem 1.15rem; border-radius: 11px; border: 1px solid transparent;
+  transition: transform .15s ease, opacity .15s ease;
+}
+.btn:hover { transform: translateY(-1px); opacity: .92; }
+.btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn .chip {
+  font-family: var(--mono); font-size: .8rem; background: var(--ink); color: var(--paper);
+  padding: .15rem .45rem; border-radius: 7px;
+}
+.btn-ghost .chip { background: var(--ink); color: var(--paper); }
+
+/* ── hero ────────────────────────────────────────────────────────────── */
+.hero { padding: 5rem 0 0; }
+@media (min-width: 640px) { .hero { padding: 8rem 0 0; } }
+h1 {
+  margin: 0; font-size: clamp(2.9rem, 9vw, 6rem); line-height: .96;
+  letter-spacing: -.035em; font-weight: 800; max-width: 15ch; text-wrap: balance;
+}
+mark {
+  background: transparent; color: inherit; position: relative;
+  display: inline-block; -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+mark::after {
+  content: ""; position: absolute; left: -.04em; right: -.04em; bottom: -.06em;
+  height: .3em; background: var(--mark); z-index: -1; border-radius: 2px;
+}
+.lede {
+  margin: 1.6rem 0 0; font-size: clamp(1.05rem, 2vw, 1.3rem); color: var(--ink-soft);
+  max-width: 34ch; line-height: 1.45;
+}
+.cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: 2.25rem; }
+.facts {
+  margin: 1.1rem 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: .4rem 1.1rem;
+  font-family: var(--mono); font-size: .78rem; color: var(--ink-faint); letter-spacing: .01em;
+}
+
+/* ── the mac ─────────────────────────────────────────────────────────── */
+.stage { margin-top: 3.5rem; }
+.mac {
+  position: relative; aspect-ratio: 16 / 10; border-radius: var(--radius-lg);
+  background:
+    radial-gradient(120% 90% at 20% 0%, #2f5d7c 0%, transparent 55%),
+    radial-gradient(100% 80% at 90% 20%, #7a4a63 0%, transparent 60%),
+    linear-gradient(160deg, #1d2b3a 0%, #24303b 45%, #3a2f36 100%);
+  overflow: hidden; box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,.06);
+}
+.menubar {
+  position: absolute; inset: 0 0 auto 0; height: 26px; display: flex; align-items: center;
+  gap: 1rem; padding: 0 .9rem; color: rgba(255,255,255,.72); font-size: 11.5px;
+  background: rgba(0,0,0,.22); backdrop-filter: blur(12px);
+}
+.menubar .right { margin-left: auto; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* the notch itself: collapsed pill → expanded panel */
+.notch {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  background: #000; color: #fff; z-index: 5;
+  width: 210px; height: 30px; border-radius: 0 0 16px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 12px; cursor: pointer; overflow: hidden;
+  transition: width .42s cubic-bezier(.2,.9,.25,1), height .42s cubic-bezier(.2,.9,.25,1),
+              border-radius .42s cubic-bezier(.2,.9,.25,1), padding .3s;
+  box-shadow: 0 12px 34px rgba(0,0,0,.45);
+}
+.notch.open {
+  width: min(560px, 88%); height: min(340px, 74%); border-radius: 0 0 26px 26px;
+  padding: 10px 12px 12px; cursor: default; align-items: stretch;
+}
+.collapsed { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.notch.open .collapsed { display: none; }
+.panel { display: none; width: 100%; gap: 12px; }
+.notch.open .panel { display: flex; }
+.c-label { font-size: 10.5px; letter-spacing: .04em; color: rgba(255,255,255,.62); font-family: var(--mono); }
+
+/* board */
+/* Both axes have to be explicit: with `auto` rows an empty rank collapses
+   to nothing and the board loses its squares. */
+.board {
+  display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);
+  aspect-ratio: 1; height: 100%; border-radius: 8px; overflow: hidden;
+  container-type: size;
+}
+.sq { position: relative; display: grid; place-items: center; line-height: 1; user-select: none; font-size: 22px; }
+/* Sized against the board, not the viewport, so the pieces stay in
+   proportion whatever the panel is scaled to. The 22px above is the
+   fallback if container units are unavailable. */
+.sq .pc { font-size: 9.5cqw; }
+.sq.l { background: var(--sq-light); } .sq.d { background: var(--sq-dark); }
+.sq.sel { box-shadow: inset 0 0 0 3px var(--dino-play); }
+.sq.last { box-shadow: inset 0 0 0 3px rgba(102,230,128,.45); }
+.sq.chk { box-shadow: inset 0 0 0 3px var(--dino-lost); }
+.sq .dot { position: absolute; width: 26%; height: 26%; border-radius: 50%; background: rgba(36,26,18,.32); pointer-events: none; }
+.sq .pc { color: #1c1712; text-shadow: 0 1px 0 rgba(255,255,255,.35); }
+.sq .pc.w { color: #fffdf8; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
+.side { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.opp { display: flex; align-items: center; gap: 8px; }
+.opp .nm { font-size: 12.5px; font-weight: 600; }
+.opp .el { font-family: var(--mono); font-size: 10.5px; color: rgba(255,255,255,.55); white-space: nowrap; }
+.moves {
+  flex: 1; overflow: auto; font-family: var(--mono); font-size: 11px; line-height: 1.7;
+  color: rgba(255,255,255,.75); background: rgba(255,255,255,.05); border-radius: 8px; padding: 6px 8px;
+}
+.moves:empty::before {
+  content: "no moves yet"; color: rgba(255,255,255,.28); font-style: normal;
+}
+.status { font-size: 11.5px; color: rgba(255,255,255,.8); min-height: 1.3em; }
+.mini { display: flex; gap: 6px; }
+.mini button {
+  flex: 1; font: inherit; font-size: 11px; padding: 5px 0; border-radius: 7px; cursor: pointer;
+  background: rgba(255,255,255,.12); color: #fff; border: 0;
+}
+.mini button:hover { background: rgba(255,255,255,.2); }
+.hint-line {
+  margin: .9rem 0 0; font-size: .9rem; color: var(--ink-faint); display: flex; align-items: center; gap: .4rem;
+}
+.hint-line .arw { animation: nudge 2.4s ease-in-out infinite; }
+@keyframes nudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+/* ── features ────────────────────────────────────────────────────────── */
+.sec { padding: 6rem 0; }
+.grid { display: grid; gap: 2.5rem 1.5rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+.feat h2 { margin: .9rem 0 0; font-size: 1.5rem; line-height: 1.15; letter-spacing: -.02em; font-weight: 700; }
+.feat p { margin: .45rem 0 0; color: var(--ink-soft); font-size: .95rem; }
+.ico { width: 44px; height: 44px; color: var(--ink); }
+
+/* ── price ───────────────────────────────────────────────────────────── */
+.price-wrap { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
+@media (min-width: 900px) { .price-wrap { grid-template-columns: 1fr 1fr; } }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 1.4rem; padding: 1.75rem; }
+.card h3 { margin: 0; font-size: 1.1rem; letter-spacing: -.01em; }
+.big { font-size: 3rem; font-weight: 800; letter-spacing: -.03em; margin: .5rem 0 0; }
+.big small { font-size: 1rem; font-weight: 500; color: var(--ink-soft); letter-spacing: 0; }
+.list { list-style: none; margin: 1.1rem 0 0; padding: 0; display: grid; gap: .5rem; font-size: .95rem; }
+.list li { display: flex; gap: .6rem; align-items: flex-start; color: var(--ink-soft); }
+.list li b { color: var(--ink); font-weight: 600; }
+.tick { flex: none; margin-top: .35rem; width: 14px; height: 14px; }
+.anchor { margin: 1.25rem 0 0; font-size: .9rem; color: var(--ink-faint); }
+
+/* ── faq ─────────────────────────────────────────────────────────────── */
+details { border-top: 1px solid var(--line); padding: 1.1rem 0; }
+details:last-of-type { border-bottom: 1px solid var(--line); }
+summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 1rem; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; color: var(--ink-faint); font-weight: 400; }
+details[open] summary::after { content: "–"; }
+details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-size: .96rem; }
+
+/* ── footer ──────────────────────────────────────────────────────────── */
+.foot { padding-top: 5rem; overflow: hidden; }
+.foot-row { display: flex; gap: .6rem; align-items: center; }
+.sq-btn {
+  width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px;
+  border: 1px solid var(--line); color: var(--ink-soft); text-decoration: none;
+}
+.sq-btn:hover { color: var(--ink); }
+/* One line, allowed to run past the gutters and clip — the wordmark is a
+   texture, not a label. */
+.wordmark {
+  margin: 2rem 0 -.16em; font-weight: 800; letter-spacing: -.05em; line-height: .82;
+  font-size: clamp(3rem, 15.5vw, 13rem); color: var(--ink); opacity: .09;
+  user-select: none; white-space: nowrap;
+}
+.legal { padding: 1.5rem 0 3rem; font-size: .82rem; color: var(--ink-faint); display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
+
+.mobile-note {
+  display: none; margin-top: 1rem; font-size: .9rem; color: var(--ink-soft);
+  border: 1px dashed var(--line); border-radius: var(--radius); padding: .8rem 1rem;
+}
+@media (max-width: 700px) { .mobile-note { display: block; } .notch { display: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav"><div class="wrap nav-in">
+  <a class="brand" href="#top"><span id="brandIcon"></span><span>Dyno Chess</span></a>
+  <a class="pill" href="#changelog">v0.2.0</a>
+  <span class="nav-sp"></span>
+  <a class="txt" href="#price">Pricing</a>
+  <a class="txt" href="#faq">FAQ</a>
+  <a class="btn" href="#download">Download</a>
+</div></nav>
+
+<header class="hero wrap" id="top">
+  <h1>Chess that doesn't <mark>steal</mark> your day.</h1>
+  <p class="lede">It lives in your MacBook's notch. Hover, play a move, get back to work.</p>
+  <div class="cta-row">
+    <a class="btn" href="#download">Download for Mac</a>
+    <a class="btn btn-ghost" href="#price">Buy Pro <span class="chip">$14.99</span></a>
+  </div>
+  <ul class="facts">
+    <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>No network access</li>
+  </ul>
+</header>
+
+<section class="wrap stage">
+  <div class="mac" id="mac">
+    <div class="menubar">
+      <span>&#63743;</span><span><b>Dyno Chess</b></span><span>File</span><span>Game</span><span>Window</span>
+      <span class="right" id="clock">9:41</span>
+    </div>
+
+    <div class="notch" id="notch" tabindex="0" role="button" aria-expanded="false"
+         aria-label="Expand the notch and play a move">
+      <div class="collapsed">
+        <span id="dinoSmall"></span>
+        <span class="c-label" id="cLabel">YOUR TURN</span>
+      </div>
+
+      <div class="panel">
+        <div class="board" id="board"></div>
+        <div class="side">
+          <div class="opp">
+            <span id="dinoBig"></span>
+            <span><span class="nm">Rookie</span><br><span class="el" id="elo">600 · blunders like a person</span></span>
+          </div>
+          <div class="moves" id="moves"></div>
+          <div class="status" id="status">Your move. Play e4.</div>
+          <div class="mini">
+            <button type="button" id="undoBtn">Undo</button>
+            <button type="button" id="newBtn">New game</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="hint-line"><span class="arw">&#8593;</span> Psst… hover the notch, then actually play a move. It's a real game.</p>
+  <p class="mobile-note">This is a Mac app — the playable demo needs a wider screen. Open this page on your Mac to try it.</p>
+</section>
+
+<section class="sec wrap">
+  <div class="grid">
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 20h8M9 20l.6-4h4.8l.6 4M9.6 16C8 14 7 12 7 10V8l2 1 1-2 2 2 2-2 1 2 2-1v2c0 2-1 4-2.6 6"/></svg>
+      <h2>Nine opponents,<br>400 to 3000</h2><p>From someone who hangs a queen to full-strength Stockfish.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5s1.2 1.5 3.5 1.5 3.5-1.5 3.5-1.5M9 9.5h.01M15 9.5h.01"/></svg>
+      <h2>A beginner that<br>plays like one</h2><p>The weak levels don't just think less. They blunder the way people do.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M9 5h6v3H9z" fill="currentColor" stroke="none"/></svg>
+      <h2>Hover to play,<br>then it's gone</h2><p>No window to arrange, no tab to close. The board leaves when your pointer does.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 1.5M9 3h6"/></svg>
+      <h2>Bullet, blitz<br>and rapid</h2><p>A real clock ticking in the notch while you work. 1+0 through 15+10.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3.5 19c.6-3 2.5-4.5 5-4.5s4.4 1.5 5 4.5M13 19c.5-2.6 2.2-4.1 4.4-4.1S21.4 16.4 22 19"/></svg>
+      <h2>Two players,<br>one Mac</h2><p>Hot-seat mode. Pass the laptop across the table.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l7 3v6c0 4.2-2.8 7.5-7 9-4.2-1.5-7-4.8-7-9V6z"/><path d="M9.5 12.2l1.8 1.8 3.4-3.6"/></svg>
+      <h2>Never phones<br>home</h2><p>No account, no telemetry, no network entitlement. Check it with codesign yourself.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>
+      <h2>Every game<br>kept as PGN</h2><p>Your history is a text file you can take anywhere. No lock-in.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M7 21h10"/></svg>
+      <h2>Stays put above<br>full screen</h2><p>Works over full-screen apps, across Spaces, on every display.</p></div>
+  </div>
+</section>
+
+<section class="sec wrap" id="price">
+  <h2 style="font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-.03em;margin:0 0 2rem;font-weight:800;">Buy it once.</h2>
+  <div class="price-wrap">
+    <div class="card">
+      <h3>Free, forever</h3>
+      <p class="big">$0</p>
+      <ul class="list">
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>The island, the full board, every animation</span></li>
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>All nine opponents</b>, up to full strength</span></li>
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Untimed play, hot-seat, unlimited undo</span></li>
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Live eval bar, your last five games</span></li>
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Three hints a day</span></li>
+      </ul>
+      <p class="anchor">Strength is never the paywall. The engine plays as hard as you ask, free.</p>
+    </div>
+    <div class="card">
+      <h3>Pro</h3>
+      <p class="big">$14.99 <small>once · 3 Macs</small></p>
+      <ul class="list">
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Every time control</b> — bullet, blitz, rapid, increments</span></li>
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Board, piece and island themes</b></span></li>
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Unlimited history, PGN import and batch export</span></li>
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Unlimited hints and post-game review</span></li>
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Every update to this version, free</span></li>
+      </ul>
+      <p class="anchor">Chess.com Diamond is $119.99 a year. Every year.</p>
+      <div class="cta-row" style="margin-top:1.25rem">
+        <a class="btn" href="#download" id="buy">Buy Pro <span class="chip">$14.99</span></a>
+        <span style="font-size:.85rem;color:var(--ink-faint)">14 days free, then it keeps working as Free.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec wrap" id="faq">
+  <h2 style="font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-.03em;margin:0 0 2rem;font-weight:800;">Questions.</h2>
+
+  <details><summary>Why isn't it on the Mac App Store?</summary>
+    <p>Because it ships Stockfish, and Stockfish is licensed under the GPLv3, which is widely held to be incompatible with the App Store's terms. Downloading it here is the honest option rather than a worse one: the build is signed with a Developer ID and notarized by Apple, so Gatekeeper is satisfied, and it updates itself directly.</p></details>
+
+  <details><summary>Does it need an internet connection?</summary>
+    <p>No, and it cannot use one. The app ships without the network entitlement at all, so this is verifiable rather than a promise — run <code>codesign -d --entitlements :- "Dyno Chess.app"</code> and look for yourself. There is no account, no sign-in and no analytics.</p></details>
+
+  <details><summary>What happens when the trial ends?</summary>
+    <p>Nothing breaks. You get 14 days of Pro when you first launch it, and after that the app quietly becomes the free version. The board, the island and all nine opponents keep working forever. You will never find your chess game held hostage.</p></details>
+
+  <details><summary>How many Macs does one licence cover?</summary>
+    <p>Three. The licence is a signed file checked on your Mac, so activating does not require the internet either.</p></details>
+
+  <details><summary>Can I get a refund?</summary>
+    <p>Yes, within 14 days, no reason required.</p></details>
+
+  <details><summary>Which engine is it, and is the source available?</summary>
+    <p>Stockfish, running as a separate process over UCI, exactly as its licence intends. The full GPLv3 text ships inside the disk image alongside a link to the exact source revision the bundled binary was built from.</p></details>
+
+  <details><summary>I don't have a notch. Does it still work?</summary>
+    <p>Yes. On a Mac without a physical notch the island draws itself as a pill at the top of whichever display you choose.</p></details>
+</section>
+
+<footer class="foot wrap" id="download">
+  <div class="cta-row" style="margin-bottom:2rem">
+    <a class="btn" href="#">Download for Mac</a>
+    <a class="btn btn-ghost" href="#price">Buy Pro <span class="chip">$14.99</span></a>
+  </div>
+  <div class="foot-row">
+    <a class="sq-btn" href="#" aria-label="X"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7 8 8.2 12h-6.4l-5-7.3L5.9 22H2.8l7.5-8.6L2.4 2h6.6l4.5 6.7zm-1.1 18h1.7L7.3 3.8H5.5z"/></svg></a>
+    <a class="sq-btn" href="#" aria-label="Changelog" id="changelog"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg></a>
+  </div>
+  <p class="wordmark">Dyno Chess</p>
+</footer>
+<div class="wrap legal">
+  <span>© 2026 Dyno Chess</span><span>Privacy</span><span>Terms</span>
+  <span>Stockfish is GPLv3 and ships with its licence.</span>
+</div>
+
+<script>
+"use strict";
+/* ── the dino ────────────────────────────────────────────────────────────
+   The same 11x10 pixel grid as MascotArt.swift, so the site and the app
+   are drawing the same animal. 1 = body, 2 = underside, 3 = eye. */
+const DINO = [
+  [0,0,0,0,0,0,0,1,1,1,0],
+  [0,0,0,0,0,0,0,1,3,1,1],
+  [0,0,0,0,0,0,0,1,1,1,1],
+  [1,0,0,0,1,1,1,1,1,0,0],
+  [1,1,0,1,1,1,1,1,0,0,0],
+  [0,1,1,1,1,1,1,0,0,0,0],
+  [0,0,1,1,1,1,1,0,0,0,0],
+  [0,0,0,1,2,2,1,0,0,0,0],
+  [0,0,0,1,0,0,1,0,0,0,0],
+  [0,0,0,1,1,0,1,1,0,0,0],
+];
+function dinoSVG(color, px) {
+  let r = "";
+  for (let y = 0; y < DINO.length; y++) for (let x = 0; x < DINO[y].length; x++) {
+    const c = DINO[y][x]; if (!c) continue;
+    const fill = c === 3 ? "#fff" : color, op = c === 2 ? ".55" : "1";
+    r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${fill}" opacity="${op}"/>`;
+  }
+  return `<svg viewBox="0 0 11 10" width="${11*px}" height="${10*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+}
+const C = { idle: "#66b3ff", play: "#66e680", lost: "#ff6666" };
+document.getElementById("brandIcon").innerHTML = dinoSVG("#66e680", 2).replace("<svg", '<svg style="display:block"');
+function paintDino(state) {
+  document.getElementById("dinoSmall").innerHTML = dinoSVG(C[state], 1.6);
+  document.getElementById("dinoBig").innerHTML = dinoSVG(C[state], 2.2);
+}
+paintDino("idle");
+
+/* ── a small but real chess engine ───────────────────────────────────────
+   Full legal move generation with check filtering and queen promotion.
+   Castling and en passant are left out: this is a demo board, and leaving
+   them out is honest rather than subtly wrong. */
+const A = "abcdefgh";
+const START = "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR".split("");
+let bd, turn, hist, sel, over, lastMove, stack;
+
+const isW = p => p >= "A" && p <= "Z";
+const own = (p, w) => p !== "." && isW(p) === w;
+const idx = (f, r) => r * 8 + f;
+
+function slide(b, i, dirs, out, w) {
+  const f0 = i % 8, r0 = (i / 8) | 0;
+  for (const [df, dr] of dirs) {
+    let f = f0 + df, r = r0 + dr;
+    while (f >= 0 && f < 8 && r >= 0 && r < 8) {
+      const j = idx(f, r), t = b[j];
+      if (t === ".") out.push(j);
+      else { if (!own(t, w)) out.push(j); break; }
+      f += df; r += dr;
+    }
+  }
+}
+const DIAG = [[1,1],[1,-1],[-1,1],[-1,-1]], ORTH = [[1,0],[-1,0],[0,1],[0,-1]];
+const NJ = [[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]];
+
+function pseudo(b, i) {
+  const p = b[i]; if (p === ".") return [];
+  const w = isW(p), t = p.toLowerCase(), out = [], f0 = i % 8, r0 = (i / 8) | 0;
+  if (t === "p") {
+    const d = w ? -1 : 1, one = idx(f0, r0 + d);
+    if (r0 + d >= 0 && r0 + d < 8 && b[one] === ".") {
+      out.push(one);
+      const start = w ? 6 : 1, two = idx(f0, r0 + 2 * d);
+      if (r0 === start && b[two] === ".") out.push(two);
+    }
+    for (const df of [-1, 1]) {
+      const f = f0 + df, r = r0 + d;
+      if (f < 0 || f > 7 || r < 0 || r > 7) continue;
+      const j = idx(f, r);
+      if (b[j] !== "." && !own(b[j], w)) out.push(j);
+    }
+  } else if (t === "n") {
+    for (const [df, dr] of NJ) {
+      const f = f0 + df, r = r0 + dr;
+      if (f < 0 || f > 7 || r < 0 || r > 7) continue;
+      const j = idx(f, r); if (!own(b[j], w)) out.push(j);
+    }
+  } else if (t === "k") {
+    for (const [df, dr] of DIAG.concat(ORTH)) {
+      const f = f0 + df, r = r0 + dr;
+      if (f < 0 || f > 7 || r < 0 || r > 7) continue;
+      const j = idx(f, r); if (!own(b[j], w)) out.push(j);
+    }
+  } else {
+    slide(b, i, t === "b" ? DIAG : t === "r" ? ORTH : DIAG.concat(ORTH), out, w);
+  }
+  return out;
+}
+function attacked(b, sqI, byWhite) {
+  for (let i = 0; i < 64; i++) if (b[i] !== "." && isW(b[i]) === byWhite)
+    if (pseudo(b, i).includes(sqI)) return true;
+  return false;
+}
+function inCheck(b, w) {
+  const k = b.indexOf(w ? "K" : "k");
+  return k < 0 ? false : attacked(b, k, !w);
+}
+function apply(b, from, to) {
+  const n = b.slice();
+  n[to] = n[from]; n[from] = ".";
+  const r = (to / 8) | 0;
+  if (n[to] === "P" && r === 0) n[to] = "Q";
+  if (n[to] === "p" && r === 7) n[to] = "q";
+  return n;
+}
+function legal(b, i) {
+  const w = isW(b[i]);
+  return pseudo(b, i).filter(j => !inCheck(apply(b, i, j), w));
+}
+function allMoves(b, w) {
+  const out = [];
+  for (let i = 0; i < 64; i++) if (b[i] !== "." && isW(b[i]) === w)
+    for (const j of legal(b, i)) out.push([i, j]);
+  return out;
+}
+const VAL = { p: 100, n: 300, b: 320, r: 500, q: 900, k: 0 };
+
+/* The dino plays the way the app's weakest tiers do: it looks one ply
+   ahead, and most of the time it picks something merely decent instead of
+   the best move. That is what makes it feel like a person. */
+function dinoMove() {
+  const ms = allMoves(bd, false);
+  if (!ms.length) return null;
+  const scored = ms.map(([i, j]) => {
+    const cap = bd[j] === "." ? 0 : VAL[bd[j].toLowerCase()];
+    const after = apply(bd, i, j);
+    let risk = 0;
+    if (attacked(after, j, true)) risk = VAL[bd[i].toLowerCase()] * 0.8;
+    return { i, j, s: cap - risk + Math.random() * 90 };
+  }).sort((a, b) => b.s - a.s);
+  const pick = Math.random() < 0.35 ? Math.min(2, scored.length - 1) : 0;
+  return scored[pick];
+}
+
+const GLYPH = { K:"♔",Q:"♕",R:"♖",B:"♗",N:"♘",P:"♙",
+                k:"♚",q:"♛",r:"♜",b:"♝",n:"♞",p:"♟" };
+const boardEl = document.getElementById("board");
+const movesEl = document.getElementById("moves");
+const statusEl = document.getElementById("status");
+const cLabel = document.getElementById("cLabel");
+
+function newGame() {
+  bd = START.slice(); turn = true; hist = []; sel = null; over = false; lastMove = null; stack = [];
+  paintDino("idle"); statusEl.textContent = "Your move. Try e4.";
+  cLabel.textContent = "YOUR TURN"; draw();
+}
+function draw() {
+  const targets = sel === null ? [] : legal(bd, sel);
+  let html = "";
+  for (let i = 0; i < 64; i++) {
+    const f = i % 8, r = (i / 8) | 0;
+    const cls = ["sq", (f + r) % 2 ? "d" : "l"];
+    if (i === sel) cls.push("sel");
+    else if (lastMove && (i === lastMove[0] || i === lastMove[1])) cls.push("last");
+    if (bd[i] === "K" && inCheck(bd, true)) cls.push("chk");
+    const p = bd[i];
+    html += `<div class="${cls.join(" ")}" data-i="${i}">`;
+    if (p !== ".") html += `<span class="pc ${isW(p) ? "w" : "b"}">${GLYPH[p]}</span>`;
+    if (targets.includes(i)) html += '<span class="dot"></span>';
+    html += "</div>";
+  }
+  boardEl.innerHTML = html;
+  movesEl.innerHTML = hist.map((m, n) =>
+    n % 2 === 0 ? `<span>${n / 2 + 1}. ${m}</span> ` : `<span>${m}</span><br>`).join("");
+  movesEl.scrollTop = movesEl.scrollHeight;
+}
+function san(b, i, j) {
+  const p = b[i], t = p.toLowerCase(), cap = b[j] !== ".";
+  const to = A[j % 8] + (8 - ((j / 8) | 0));
+  if (t === "p") return (cap ? A[i % 8] + "x" : "") + to;
+  return p.toUpperCase() + (cap ? "x" : "") + to;
+}
+function finish(youWin, why) {
+  over = true; paintDino(youWin ? "lost" : "play");
+  statusEl.textContent = why; cLabel.textContent = youWin ? "YOU WON" : "GAME OVER";
+}
+function afterMove() {
+  if (!allMoves(bd, turn).length) {
+    if (inCheck(bd, turn)) finish(!turn, turn ? "Checkmate. You lost this one." : "Checkmate. You beat the dino.");
+    else finish(false, "Stalemate.");
+    draw(); return true;
+  }
+  return false;
+}
+boardEl.addEventListener("click", e => {
+  const cell = e.target.closest(".sq"); if (!cell || over || !turn) return;
+  const i = +cell.dataset.i;
+  if (sel !== null && legal(bd, sel).includes(i)) {
+    stack.push({ bd: bd.slice(), hist: hist.slice(), lastMove });
+    hist.push(san(bd, sel, i)); bd = apply(bd, sel, i); lastMove = [sel, i];
+    sel = null; turn = false; paintDino("play");
+    statusEl.textContent = "Thinking…"; cLabel.textContent = "THINKING"; draw();
+    if (afterMove()) return;
+    setTimeout(() => {
+      const m = dinoMove(); if (!m) return;
+      hist.push(san(bd, m.i, m.j)); bd = apply(bd, m.i, m.j); lastMove = [m.i, m.j];
+      turn = true; draw();
+      if (afterMove()) return;
+      paintDino(inCheck(bd, true) ? "lost" : "idle");
+      statusEl.textContent = inCheck(bd, true) ? "Check. Your move." : "Your move.";
+      cLabel.textContent = "YOUR TURN";
+    }, 620);
+    return;
+  }
+  sel = own(bd[i], true) && legal(bd, i).length ? i : null;
+  draw();
+});
+document.getElementById("newBtn").addEventListener("click", newGame);
+document.getElementById("undoBtn").addEventListener("click", () => {
+  /* Snapshots rather than replaying the notation: two knights can produce
+     the same SAN string, so replaying would sometimes restore the wrong one. */
+  const prev = stack.pop();
+  if (!prev) return;
+  bd = prev.bd; hist = prev.hist; lastMove = prev.lastMove;
+  sel = null; turn = true; over = false;
+  paintDino(inCheck(bd, true) ? "lost" : "idle");
+  statusEl.textContent = "Your move."; cLabel.textContent = "YOUR TURN"; draw();
+});
+
+/* ── the notch, behaving the way the app does ────────────────────────── */
+const notch = document.getElementById("notch");
+let openT, closeT;
+function setOpen(v) {
+  notch.classList.toggle("open", v);
+  notch.setAttribute("aria-expanded", String(v));
+}
+notch.addEventListener("mouseenter", () => { clearTimeout(closeT); openT = setTimeout(() => setOpen(true), 250); });
+notch.addEventListener("mouseleave", () => { clearTimeout(openT); closeT = setTimeout(() => setOpen(false), 400); });
+notch.addEventListener("click", () => { clearTimeout(openT); setOpen(true); });
+notch.addEventListener("keydown", e => {
+  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpen(!notch.classList.contains("open")); }
+  if (e.key === "Escape") setOpen(false);
+});
+
+const clockEl = document.getElementById("clock");
+function tick() {
+  const d = new Date();
+  clockEl.textContent = d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+tick(); setInterval(tick, 10000);
+
+const nav = document.getElementById("nav");
+addEventListener("scroll", () => nav.classList.toggle("is-stuck", scrollY > 8), { passive: true });
+
+newGame();
+</script>
+</body>
+</html>
