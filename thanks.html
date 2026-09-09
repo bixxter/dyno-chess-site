@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thank you — Dyno Chess</title>
+<meta name="description" content="Your Dyno Chess Pro licence key is on its way by email.">
+<!-- Nothing to index: this page only exists for people who just paid, and a
+     "payment received" page in search results is confusing at best. -->
+<meta name="robots" content="noindex, follow">
+<style>
+/* Same tokens as index.html. Duplicated rather than shared so each page
+   stays a single self-contained file with no external requests. */
+:root {
+  --paper: #fbf6ee; --ink: #241a12; --ink-soft: #6d5c4d; --ink-faint: #a3948a;
+  --line: #e3d8c6; --mark: #66e680;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", ui-sans-serif, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #17120e; --ink: #f6efe4; --ink-soft: #b3a294; --ink-faint: #7d6f64; --line: #322820; }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--sans); font-size: 17px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+:focus-visible { outline: 2px solid #66b3ff; outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.5rem; }
+.nav { border-bottom: 1px solid var(--line); }
+.nav-in { display: flex; align-items: center; gap: .75rem; padding: 1rem 0; }
+.brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; font-weight: 700; letter-spacing: -.02em; }
+.nav-sp { flex: 1; }
+.nav a.txt { text-decoration: none; color: var(--ink-soft); font-size: .95rem; }
+.nav a.txt:hover { color: var(--ink); }
+
+h1 { font-size: clamp(2.1rem, 6vw, 3rem); letter-spacing: -.03em; font-weight: 800; margin: 3rem 0 .5rem; }
+h2 { font-size: 1.2rem; letter-spacing: -.02em; font-weight: 700; margin: 2.5rem 0 .25rem; }
+p, li { color: var(--ink-soft); }
+p { margin: .7rem 0 0; }
+b, strong { color: var(--ink); font-weight: 600; }
+code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,.13); padding: .1rem .35rem; border-radius: 5px; }
+.lede { font-size: 1.15rem; }
+.steps { margin: .7rem 0 0; padding-left: 1.3rem; }
+.steps li { margin: .45rem 0; }
+.note {
+  margin-top: 2.5rem; border: 1px solid var(--line); border-radius: .875rem; padding: 1.1rem 1.25rem;
+}
+.note p { margin: 0; }
+.note p + p { margin-top: .5rem; }
+.tick { display: inline-block; width: .8rem; height: .8rem; border-radius: 50%; background: var(--mark); margin-right: .5rem; }
+.legal { border-top: 1px solid var(--line); margin-top: 4rem; padding: 1.5rem 0 3rem; font-size: .82rem; color: var(--ink-faint); display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
+.legal a { color: inherit; }
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-in">
+  <a class="brand" href="./"><span id="brandIcon"></span><span>Dyno Chess</span></a>
+  <span class="nav-sp"></span>
+  <a class="txt" href="./">Back to the app</a>
+</div></nav>
+
+<main class="wrap">
+  <h1><span class="tick"></span>Payment received.</h1>
+  <p class="lede">Your licence key is on its way to the email address you paid with — usually within a minute.
+    <b>If it isn't in the inbox, check the spam folder</b>, then write to us.</p>
+
+  <h2>Activating it</h2>
+  <ol class="steps">
+    <li>Open Dyno Chess and press <code>⌘,</code> for Settings.</li>
+    <li>Go to <b>Licence</b> and paste the key — one long line starting with <code>DYNO1-</code>.</li>
+    <li>Click <b>Activate</b>. Pro turns on immediately.</li>
+  </ol>
+  <p>The key is checked on your Mac by signature alone — the app makes no network
+    connection to verify it, and it keeps working offline forever. Paste the same
+    key on your other Macs.</p>
+
+  <div class="note">
+    <p><b>Nothing arrived?</b> Write to <a href="mailto:dyno@bixxter.com?subject=Dyno%20Chess%20—%20licence%20key">dyno@bixxter.com</a>
+      from the address you paid with and we'll re-send it. It's read by a person, not a queue.</p>
+    <p>Your receipt comes from <b>Polar</b>, which sells Dyno Chess as merchant of
+      record — that's the name that appears on your card statement, and the
+      <a href="legal.html#refunds">14-day refund</a> goes through them too.</p>
+  </div>
+</main>
+
+<div class="wrap legal">
+  <span>© 2026 Dyno Chess · Asatulla Dadabaev</span>
+  <a href="legal.html#privacy">Privacy</a>
+  <a href="legal.html#terms">Terms</a>
+  <a href="legal.html#refunds">Refunds</a>
+  <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a>
+</div>
+
+<script>
+"use strict";
+/* The same 11x10 pixel grid as MascotArt.swift, so every page draws the
+   same animal. 1 = body, 2 = underside, 3 = eye. */
+const DINO = [
+  [0,0,0,0,0,0,0,1,1,1,0],
+  [0,0,0,0,0,0,0,1,3,1,1],
+  [0,0,0,0,0,0,0,1,1,1,1],
+  [1,0,0,0,1,1,1,1,1,0,0],
+  [1,1,0,1,1,1,1,1,0,0,0],
+  [0,1,1,1,1,1,1,0,0,0,0],
+  [0,0,1,1,1,1,1,0,0,0,0],
+  [0,0,0,1,2,2,1,0,0,0,0],
+  [0,0,0,1,0,0,1,0,0,0,0],
+  [0,0,0,1,1,0,1,1,0,0,0],
+];
+let r = "";
+for (let y = 0; y < DINO.length; y++) for (let x = 0; x < DINO[y].length; x++) {
+  const c = DINO[y][x]; if (!c) continue;
+  r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${c === 3 ? "#fff" : "#66e680"}" opacity="${c === 2 ? ".55" : "1"}"/>`;
+}
+document.getElementById("brandIcon").innerHTML =
+  `<svg viewBox="0 0 11 10" width="22" height="20" shape-rendering="crispEdges" style="display:block" aria-hidden="true">${r}</svg>`;
+</script>
+</body>
+</html>

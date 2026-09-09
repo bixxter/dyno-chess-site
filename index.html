@@ -378,7 +378,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     </div>
     <div class="card">
       <h3>Pro</h3>
-      <p class="big">$14.99 <small>once · 3 Macs</small></p>
+      <p class="big"><span id="proPrice">$14.99</span> <small>once · 3 Macs</small></p>
       <ul class="list">
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Puzzles without the daily limit</b> — 7,200 tactics, as many a day as you want</span></li>
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Every time control</b> — bullet, blitz, rapid, increments</span></li>
@@ -412,10 +412,10 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     <p>Three. The licence is a signed file checked on your Mac, so activating does not require the internet either.</p></details>
 
   <details><summary>Can I get a refund?</summary>
-    <p>Yes, within 14 days, no reason required. Email <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a> and it gets refunded in full — you don't have to explain yourself. The <a href="legal.html#refunds">refund policy</a> spells out the details.</p></details>
+    <p>Yes, within 14 days, no reason required. Email <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a> and it gets refunded in full — you don't have to explain yourself. The <a href="legal.html#refunds">refund policy</a> spells out the details.</p></details>
 
   <details><summary>Who am I buying from, and how do I get help?</summary>
-    <p>Dyno Chess is made and sold by Asatulla Dadabaev — one person, not a company. Support, refunds and lost licence keys all go to <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a>, and it's read by a person. The <a href="legal.html#privacy">privacy policy</a> and <a href="legal.html#terms">terms of sale</a> are on one page.</p></details>
+    <p>Dyno Chess is made and sold by Asatulla Dadabaev — one person, not a company. Support, refunds and lost licence keys all go to <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a>, and it's read by a person. The <a href="legal.html#privacy">privacy policy</a> and <a href="legal.html#terms">terms of sale</a> are on one page.</p></details>
 
   <details><summary>Which engine is it, and is the source available?</summary>
     <p>Stockfish, running as a separate process over UCI, exactly as its licence intends. The full GPLv3 text ships inside the disk image alongside a link to the exact source revision the bundled binary was built from.</p></details>
@@ -430,11 +430,11 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 <footer class="foot wrap" id="download">
   <div class="cta-row" style="margin-bottom:1rem">
     <span class="btn btn-soon">Download for Mac — coming soon</span>
-    <a class="btn btn-ghost" href="mailto:debixxter@gmail.com?subject=Dyno%20Chess%20—%20tell%20me%20when%20it%20ships">Email me when it ships</a>
+    <a class="btn btn-ghost" href="mailto:dyno@bixxter.com?subject=Dyno%20Chess%20—%20tell%20me%20when%20it%20ships">Email me when it ships</a>
   </div>
   <p style="margin:0;font-size:.9rem;color:var(--ink-faint);max-width:46ch">
     The Mac build is being notarized. Write to
-    <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a> and you'll get a line
+    <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a> and you'll get a line
     the day it's downloadable — nothing else, ever.
   </p>
   <p class="wordmark">Dyno Chess</p>
@@ -444,7 +444,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <a href="legal.html#privacy">Privacy</a>
   <a href="legal.html#terms">Terms</a>
   <a href="legal.html#refunds">Refunds</a>
-  <a href="mailto:debixxter@gmail.com">debixxter@gmail.com</a>
+  <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a>
   <span>Stockfish is GPLv3 and ships with its licence.</span>
 </div>
 
@@ -699,6 +699,140 @@ const nav = document.getElementById("nav");
 addEventListener("scroll", () => nav.classList.toggle("is-stuck", scrollY > 8), { passive: true });
 
 newGame();
+</script>
+
+<!-- ── checkout ──────────────────────────────────────────────────────────
+     A merchant of record takes the money, then its webhook reaches the licence
+     worker, which signs an Ed25519 key and emails it. Nothing on this page
+     issues anything, and nothing here is a secret — a checkout link and a
+     client-side token are both public by design and can only open a checkout
+     for this account's own products.
+
+     Two are wired up because they are interchangeable from here: the worker
+     answers both `/paddle/webhook` and `/polar/webhook`, and the key the buyer
+     receives is identical either way. SELLER below picks which one the button
+     opens; it must match the provider whose webhook is actually configured. -->
+<script>
+"use strict";
+/* "polar" | "paddle". Paddle's catalog, domain and webhook are live and
+   verified, but its KYC is not, so it cannot take money today; Polar can, and
+   is a merchant of record on the same terms. Flip this back the day Paddle's
+   verification clears — and change the merchant named in legal.html and
+   thanks.html in the same commit, because that text is the seller of record. */
+const SELLER = "polar";
+
+/* Polar > Products > Checkout Links > the link's URL, `https://buy.polar.sh/…`.
+   Until it is filled in the button stays "Coming soon", which is the honest
+   state and the safe one: a live button pointed at the wrong product sells the
+   wrong thing. Sandbox links come from sandbox.polar.sh and never cross over.
+
+   Set the link's **Success URL** to thanks.html in the Polar dashboard — unlike
+   Paddle it cannot be passed as a query parameter, so it is not set here. */
+const POLAR_CHECKOUT_URL = "https://buy.polar.sh/polar_cl_wjRJy1fYsNCwKI1VX7jhqVkZCuN64LpD3M2t23hqCtb";
+
+/* Fill both in to open the Paddle shop.
+     token    Paddle > Developer tools > Authentication > Client-side tokens
+              (`live_…` for real sales, `test_…` for the sandbox account)
+     priceId  Paddle > Catalog > Products > Dyno Chess Pro > the price's `pri_…`
+   Sandbox and live ids are from separate accounts and never cross. */
+const PADDLE_CLIENT_TOKEN = "live_89cc0d3da34b9eb77cea042b7a5";
+const PADDLE_PRICE_ID = "pri_01m0dk69whkgczh8efza474r69";
+
+/* Where Paddle sends the buyer after payment. The key arrives by email, not
+   here, so this page's only job is to say so before they go looking. */
+const CHECKOUT_SUCCESS_URL = "https://dynochess.bixxter.com/thanks.html";
+
+(function openShop() {
+  if (SELLER === "polar") polarShop();
+  else loadPaddle();
+})();
+
+/* Polar's checkout is a page, not an overlay, so this is a link and no
+   third-party script is loaded at all — the page still makes no outbound
+   request until the visitor decides to buy, which is both the claim the
+   product is sold on and one less thing to explain in the privacy policy.
+   An <a href> is focusable and works from the keyboard for free, and with JS
+   off the page reads "Coming soon" rather than offering a dead button. */
+function polarShop() {
+  const buy = document.getElementById("buy");
+  if (!buy || !POLAR_CHECKOUT_URL) return;
+
+  const link = document.createElement("a");
+  link.className = "btn";
+  link.id = "buy";
+  link.href = POLAR_CHECKOUT_URL;
+  link.textContent = "Buy Pro";
+  const chip = document.createElement("span");
+  chip.className = "chip";
+  /* Stays $14.99: Polar has no client-side price preview, and it charges in
+     USD and shows the buyer's tax on its own checkout page. */
+  chip.textContent = "$14.99";
+  link.appendChild(chip);
+  buy.replaceWith(link);
+}
+
+/* Paddle.js is fetched only once the shop is actually configured — same
+   reasoning as above. */
+function loadPaddle() {
+  const buy = document.getElementById("buy");
+  if (!buy || !PADDLE_CLIENT_TOKEN || !PADDLE_PRICE_ID) return;
+  const s = document.createElement("script");
+  s.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
+  s.onload = shop;              // CDN blocked or offline: "Coming soon" stands
+  document.head.appendChild(s);
+}
+
+function shop() {
+  const buy = document.getElementById("buy");
+
+  /* A `test_` token belongs to the sandbox account, and Paddle.js has to be
+     told so explicitly — otherwise it talks to live and every id 404s. */
+  if (PADDLE_CLIENT_TOKEN.startsWith("test_")) Paddle.Environment.set("sandbox");
+
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  Paddle.Initialize({
+    token: PADDLE_CLIENT_TOKEN,
+    checkout: {
+      settings: {
+        displayMode: "overlay",
+        theme: dark ? "dark" : "light",
+        successUrl: CHECKOUT_SUCCESS_URL,
+      },
+    },
+  });
+
+  /* Swap the placeholder span for a real button rather than making the span
+     clickable: this way it is focusable and reachable from the keyboard for
+     free, and with JS off the page still reads "Coming soon" instead of
+     offering a button that cannot open. */
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn";
+  btn.id = "buy";
+  btn.textContent = "Buy Pro";
+  const chip = document.createElement("span");
+  chip.className = "chip";
+  chip.textContent = "$14.99";
+  btn.appendChild(chip);
+  buy.replaceWith(btn);
+
+  btn.addEventListener("click", () => {
+    Paddle.Checkout.open({ items: [{ priceId: PADDLE_PRICE_ID, quantity: 1 }] });
+  });
+
+  /* Show the price the visitor will actually be charged — Paddle prices in
+     their currency and adds their VAT, so a flat "$14.99" is a surprise at
+     the checkout for most of the world. Failure is silent: the hardcoded
+     price stays, which is wrong for some visitors but never blank. */
+  Paddle.PricePreview({ items: [{ priceId: PADDLE_PRICE_ID, quantity: 1 }] })
+    .then((preview) => {
+      const line = preview?.data?.details?.lineItems?.[0];
+      const total = line?.formattedTotals?.total;
+      const el = document.getElementById("proPrice");
+      if (total && el) { el.textContent = total; chip.textContent = total; }
+    })
+    .catch(() => {});
+}
 </script>
 </body>
 </html>
