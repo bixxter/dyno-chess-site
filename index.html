@@ -847,12 +847,18 @@ newGame();
      opens; it must match the provider whose webhook is actually configured. -->
 <script>
 "use strict";
-/* "polar" | "paddle". Paddle's catalog, domain and webhook are live and
-   verified, but its KYC is not, so it cannot take money today; Polar can, and
-   is a merchant of record on the same terms. Flip this back the day Paddle's
-   verification clears — and change the merchant named in legal.html and
-   thanks.html in the same commit, because that text is the seller of record. */
-const SELLER = "polar";
+/* "paddle" | "polar". Paddle's account verification cleared on 2026-09-09, so
+   Paddle takes the money again: catalog, price, checkout domain, client token
+   and webhook destination were all re-checked against the live account that
+   day and are active. Polar stays wired as the fallback — its live product,
+   checkout link and webhook are equally real, so falling back is this one
+   word plus the merchant names below.
+
+   Whichever provider is named here must also be the merchant named in
+   legal.html and thanks.html, because that text is the seller of record;
+   leaving one provider there while the other takes the money is the kind of
+   mismatch that ends in a chargeback nobody can answer. */
+const SELLER = "paddle";
 
 /* Polar > Products > Checkout Links > the link's URL, `https://buy.polar.sh/…`.
    Until it is filled in the button stays "Coming soon", which is the honest
