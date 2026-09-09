@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dyno Chess — chess that lives in your MacBook's notch</title>
-<meta name="description" content="A full chess game in your MacBook's notch. Hover to play a move against nine opponents, then get back to work. Native, offline, no account.">
+<meta name="description" content="A full chess game in your MacBook's notch. Hover to play a move against nine opponents, then get back to work. It also watches your Claude Code sessions and tells you when the agent needs an answer. Native, offline, no account.">
 <meta property="og:title" content="Dyno Chess">
-<meta property="og:description" content="Chess that doesn't steal your day. It lives in your MacBook's notch.">
+<meta property="og:description" content="Chess that doesn't steal your day — and your Claude Code sessions in the same notch.">
 <meta property="og:type" content="website">
 <style>
 /* ── tokens ─────────────────────────────────────────────────────────────
@@ -217,6 +217,54 @@ mark::after {
 .hint-line .arw { animation: nudge 2.4s ease-in-out infinite; }
 @keyframes nudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
+/* ── the agent strip ─────────────────────────────────────────────────── */
+.newline { margin: 1.5rem 0 0; font-size: .92rem; max-width: 46ch; }
+.newline a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--line); }
+.newline a:hover { color: var(--ink); }
+.newline b { color: var(--ink); font-weight: 600; }
+.kicker {
+  font-family: var(--mono); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--ink-faint); margin: 0 0 .9rem;
+}
+.h2-big { font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -.03em; margin: 0; font-weight: 800; line-height: 1.04; }
+.sec-lede { margin: 1.2rem 0 0; color: var(--ink-soft); max-width: 60ch; font-size: 1.05rem; }
+/* The strip as the app draws it: the same black panel, the same row radii and
+   the same state colours as AgentPalette.swift, so the page is not selling a
+   screenshot the app cannot produce. */
+.strip {
+  margin-top: 2.75rem; background: #000; border-radius: 22px; padding: 14px 16px;
+  display: grid; gap: 8px; box-shadow: var(--shadow); overflow-x: auto;
+}
+.arow {
+  display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 10px;
+  background: rgba(255,255,255,.05); color: #fff; min-width: 36rem;
+}
+.arow.attn { background: rgba(255,255,255,.09); box-shadow: inset 3px 0 0 #9e8cfa; }
+.adot { flex: none; width: 8px; height: 8px; border-radius: 50%; }
+.anm { flex: 1; min-width: 0; font-size: .84rem; font-weight: 600; }
+.asub { display: block; font-weight: 400; font-size: .75rem; color: rgba(255,255,255,.5); }
+.asub code { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); }
+.atime {
+  flex: none; font-family: var(--mono); font-size: .72rem;
+  color: rgba(255,255,255,.45); font-variant-numeric: tabular-nums;
+}
+.abtns { display: flex; gap: 6px; flex: none; }
+.abtn {
+  font-size: .72rem; font-weight: 500; padding: .3rem .55rem; border-radius: 7px;
+  background: rgba(255,255,255,.1); color: rgba(255,255,255,.85);
+}
+.abtn.pri { background: rgba(255,255,255,.22); font-weight: 600; }
+.abtn.neg { background: rgba(255,102,102,.18); color: #ff9d9d; }
+.strip-cap { margin: .85rem 0 0; font-size: .82rem; color: var(--ink-faint); }
+.grid3 { display: grid; gap: 2rem 1.5rem; grid-template-columns: 1fr; margin-top: 3.5rem; }
+@media (min-width: 900px) { .grid3 { grid-template-columns: repeat(3, 1fr); } }
+.grid3 h3 { margin: 0; font-size: 1.15rem; letter-spacing: -.02em; }
+.grid3 p { margin: .5rem 0 0; color: var(--ink-soft); font-size: .95rem; }
+.fineprint {
+  margin: 3rem 0 0; padding-top: 1.3rem; border-top: 1px solid var(--line);
+  font-size: .88rem; color: var(--ink-faint); max-width: 74ch;
+}
+
 /* ── features ────────────────────────────────────────────────────────── */
 .sec { padding: 6rem 0; }
 .grid { display: grid; gap: 2.5rem 1.5rem; grid-template-columns: 1fr; }
@@ -280,8 +328,9 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 
 <nav class="nav" id="nav"><div class="wrap nav-in">
   <a class="brand" href="#top"><span id="brandIcon"></span><span>Dyno Chess</span></a>
-  <span class="pill">v0.2.0</span>
+  <span class="pill">v0.3.0</span>
   <span class="nav-sp"></span>
+  <a class="txt" href="#agents">Agents</a>
   <a class="txt" href="#price">Pricing</a>
   <a class="txt" href="#faq">FAQ</a>
   <span class="btn btn-soon">Coming soon</span>
@@ -295,8 +344,10 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     <a class="btn btn-ghost" href="#price">See what Pro costs <span class="chip">$14.99</span></a>
   </div>
   <ul class="facts">
-    <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>No network access</li>
+    <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>No network access</li><li>Works with Claude Code</li>
   </ul>
+  <p class="newline"><a href="#agents"><b>New in 0.3</b> — the same notch watches your Claude Code
+    sessions and tells you when the agent is waiting on you &#8594;</a></p>
 </header>
 
 <section class="wrap stage">
@@ -335,6 +386,69 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <p class="mobile-note">This is a Mac app — the playable demo needs a wider screen. Open this page on your Mac to try it.</p>
 </section>
 
+<section class="sec wrap" id="agents">
+  <p class="kicker">New in 0.3 · Claude Code</p>
+  <h2 class="h2-big">You were already waiting.<br>Now the wait has a board.</h2>
+  <p class="sec-lede">You send Claude Code off to work and then sit there watching a terminal, in
+    case it asks something. Dyno Chess puts those sessions in a strip under the board — and when the
+    agent is blocked on you, the closed notch says so from across the desk. Same app, same licence,
+    no window to arrange.</p>
+
+  <div class="strip">
+    <div class="arow attn">
+      <span class="adot" style="background:#9e8cfa"></span>
+      <span class="anm">dyno-chess
+        <span class="asub">Needs approval · Bash · <code>swift test --package-path Packages/Island</code></span></span>
+      <span class="atime">0:28</span>
+      <span class="abtns"><b class="abtn pri">Approve</b><b class="abtn">Always</b><b class="abtn neg">Reject</b><b class="abtn">Open &#8599;</b></span>
+    </div>
+    <div class="arow">
+      <span class="adot" style="background:#fac259"></span>
+      <span class="anm">api-worker <span class="asub">Thinking…</span></span>
+      <span class="atime">4m</span>
+      <span class="abtns"><b class="abtn">Open &#8599;</b></span>
+    </div>
+    <div class="arow">
+      <span class="adot" style="background:#66e680"></span>
+      <span class="anm">landing-page <span class="asub">Your turn</span></span>
+      <span class="atime">12m</span>
+      <span class="abtns"><b class="abtn">Open &#8599;</b></span>
+    </div>
+  </div>
+  <p class="strip-cap">The strip as it draws under the board. Purple is blocked on you, amber is
+    working, green has finished and is waiting.</p>
+
+  <div class="grid3">
+    <div>
+      <h3>It tells you, so you stop checking</h3>
+      <p>The closed notch carries the signal: an agent waiting on an answer looks different from an
+        agent that has finished, and both look different from a chess game you're losing. You get
+        the news without opening anything.</p>
+    </div>
+    <div>
+      <h3>One click, the right tab</h3>
+      <p>Clicking a row raises the terminal that session is actually running in — Terminal.app and
+        iTerm2 land on the exact tab. Ghostty, WezTerm, kitty, Warp, VS Code and the rest get
+        brought to the front. Sessions over SSH are marked and never jumped.</p>
+    </div>
+    <div>
+      <h3>Answer without leaving</h3>
+      <p>Pro turns the row into <b>Approve</b>, <b>Always allow</b> and <b>Reject</b>, so a
+        permission prompt costs you a click instead of a context switch. Free gets five approvals a
+        day; after that the request falls through to the terminal exactly as it does today.</p>
+    </div>
+  </div>
+
+  <p class="fineprint">Claude Code only in this release — Codex and Gemini CLI speak a near-identical
+    hook interface and are the obvious next ones, but nothing here is sold on a promise of them. The hooks are written into <code>~/.claude/settings.json</code>
+    only when you press Install, after a timestamped backup, alongside your own entries rather than
+    over them; Remove takes out only ours. If Dyno Chess isn't running, or is quit mid-decision, the
+    bridge does nothing at all and your agent behaves exactly as it would without it. Nothing about
+    a session leaves the Mac: the app still ships with no network entitlement, and the hook reaches
+    it over a local socket inside your own account. Dyno Chess is an independent product and is not
+    affiliated with Anthropic.</p>
+</section>
+
 <section class="sec wrap">
   <div class="grid">
     <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 20h8M9 20l.6-4h4.8l.6 4M9.6 16C8 14 7 12 7 10V8l2 1 1-2 2 2 2-2 1 2 2-1v2c0 2-1 4-2.6 6"/></svg>
@@ -357,6 +471,10 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
       <h2>7,200 tactics,<br>thirty seconds each</h2><p>Nine difficulty bands from the Lichess database, picked to sit just above your rating. Three a day free, unlimited on Pro.</p></div>
     <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 18L14 8M14 8h-4M14 8v4"/><path d="M4 6h3M5.5 4.5v3"/><path d="M17 15h3M18.5 13.5v3"/></svg>
       <h2>Miss it, and it<br>tells you why</h2><p>A wrong move doesn't end the puzzle. It draws what the opponent does to you, then lets you try again.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9.5l3 2.5-3 2.5M12.5 15H17"/></svg>
+      <h2>Your agents,<br>under the board</h2><p>A live strip of Claude Code sessions: what each one is doing, how long it's been, and which one is waiting on you.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 12.5V17a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h8"/><path d="M8.5 11.5l3 3L21 5"/></svg>
+      <h2>Approve from<br>the notch</h2><p>Answer a permission prompt without hunting for the terminal. Five a day free, unlimited on Pro.</p></div>
   </div>
 </section>
 
@@ -373,6 +491,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Untimed play, hot-seat, unlimited undo</span></li>
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Live eval bar, your last five games</span></li>
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Three hints a day</span></li>
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Claude Code sessions in the island</b> — the strip, the signal in the notch, the jump back to the right tab, and five approvals a day</span></li>
       </ul>
       <p class="anchor">Strength is never the paywall. The engine plays as hard as you ask, free.</p>
     </div>
@@ -384,6 +503,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Every time control</b> — bullet, blitz, rapid, increments</span></li>
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Board, piece and island themes</span></li>
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Unlimited history, PGN import and batch export</span></li>
+        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Unlimited agent approvals</b> — Approve, Always allow or Reject from the notch, no daily count</span></li>
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Unlimited hints and post-game review</span></li>
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Every update to this version, free</span></li>
       </ul>
@@ -423,6 +543,18 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <details><summary>Three puzzles a day — is that not a bit stingy?</summary>
     <p>It's the whole feature, not a sample: you get your real rating, the rank ladder, the day streak and the theme breakdown from the first puzzle, and the app picks each one to sit just above your level. Only the count is limited. Three is about a coffee break, which is what a notch-sized board is for — and if you want to sit down and grind fifty, that's what Pro removes. The puzzles themselves come from the Lichess database, which is public domain and free forever at the source; we'd rather be upfront that what you're paying for is the volume and the machinery, not the file.</p></details>
 
+  <details><summary>What does the Claude Code integration actually do?</summary>
+    <p>Three things. It shows your live sessions in a strip under the board — the project, what the session is doing and how long it has been at it. It signals in the closed notch when one of them is blocked on you or has finished, so you don't keep tabbing back to check. And clicking a row takes you to the terminal that session is running in: Terminal.app and iTerm2 land on the exact tab, everything else gets raised to the front. On Pro you can answer the permission prompt from the notch itself; on Free you get five approvals a day and then it asks in the terminal as usual. It uses Claude Code's documented hooks and nothing else — no screen reading, no accessibility API, no polling of your files.</p></details>
+
+  <details><summary>Can it break my agent?</summary>
+    <p>It is built so it cannot. The hook exits successfully on every path it has, including a crash, a missing binary or a bad argument, and a hook that returns no decision means Claude Code carries on through its normal permission flow. If Dyno Chess isn't running, or you quit it halfway through a decision, the tool call proceeds. Hooks go into <code>~/.claude/settings.json</code> only when you press Install in Settings → Agents, after a timestamped backup, appended next to your own entries rather than over them — and Remove takes out only the ones we added. If the app is deleted, the helper removes its own entries and gets out of the way.</p></details>
+
+  <details><summary>You say it has no network access — but it can see my agent?</summary>
+    <p>Both are true, and the second is why the first still holds. Claude Code runs the hook, the hook hands the event to the app over a local socket inside your own account — file permissions, a same-user check and a per-install secret — and no packet is involved, so the network entitlement is still absent and <code>codesign</code> still proves it. What did change in 0.3 is that the same output now lists read-write exceptions for <code>~/.claude</code> and <code>~/.dynochess</code>, and Apple Events for the terminals it can jump to. All of them are named in the <a href="legal.html#privacy">privacy policy</a>, and none of them can send anything anywhere.</p></details>
+
+  <details><summary>Is this an Anthropic product?</summary>
+    <p>No. Dyno Chess is made by one person and is not affiliated with, endorsed by or sponsored by Anthropic. Claude and Claude Code are Anthropic's trademarks, used here only to say what the app works with. The integration is built on Claude Code's published hook interface, which Anthropic can change at any time — if that happens we'll follow it, but the licence you're buying is a licence to a chess app.</p></details>
+
   <details><summary>I don't have a notch. Does it still work?</summary>
     <p>Yes. On a Mac without a physical notch the island draws itself as a pill at the top of whichever display you choose.</p></details>
 </section>
@@ -446,6 +578,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <a href="legal.html#refunds">Refunds</a>
   <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a>
   <span>Stockfish is GPLv3 and ships with its licence.</span>
+  <span>Claude and Claude Code are trademarks of Anthropic PBC. Dyno Chess is independent and not affiliated with Anthropic.</span>
 </div>
 
 <script>

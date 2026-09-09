@@ -71,7 +71,7 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
 
 <main class="wrap">
   <h1>Privacy, terms &amp; refunds</h1>
-  <p class="updated">Last updated 17 August 2026</p>
+  <p class="updated">Last updated 9 September 2026</p>
 
   <ul class="toc">
     <li><a href="#privacy">Privacy policy</a></li>
@@ -84,6 +84,9 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
     <p><b>The short version.</b> The app cannot collect anything about you — it ships without
     the network entitlement, so it has no way to send data anywhere. Everything it knows
     lives on your Mac.</p>
+    <p>That includes the Claude Code integration added in version 0.3: what your agent is doing
+    is shown in the notch and goes nowhere else. It is read on your machine, held in memory and
+    forgotten when the session ends.</p>
     <p>Buying is the only part that involves anyone else, because someone has to take the
     payment. Refunds are 14 days, no reason needed.</p>
   </div>
@@ -104,6 +107,39 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   app's own container on your Mac. We never receive them and have no way to.</p>
   <p>Licence keys are verified by checking a cryptographic signature locally. Activating a
   licence does not contact us or anyone else.</p>
+  <p>The same command lists three permissions the app does hold, all of them local and all of
+  them for the Claude Code integration described next: read-write access to
+  <code>~/.claude</code> and <code>~/.dynochess</code>, and permission to send Apple Events to
+  the terminal applications it can jump to. None of them can move data off your Mac; only the
+  network entitlement could, and it is not there.</p>
+
+  <h3>The Claude Code integration</h3>
+  <p>Since version 0.3 Dyno Chess can show your <b>Claude Code</b> sessions in the island. This is
+  off until you turn it on in Settings → Agents, and it works entirely between two programs on
+  your own machine.</p>
+  <p><b>What it sees.</b> When you install the integration, Claude Code runs a small helper that
+  ships inside the app and hands it the events Claude Code publishes: the session identifier, the
+  working directory and project name, the model, the state of the session, the last assistant
+  message, and — for a permission request — the tool being asked for and the command or file path
+  it names. It also reads the small per-session files Claude Code keeps in <code>~/.claude</code>
+  so that sessions started before the app was launched still appear. <b>It never opens your
+  conversation transcripts</b>, and it does not read your source code.</p>
+  <p><b>Where it goes.</b> Nowhere. It is held in memory to draw a row in the notch, and it is
+  dropped when the session ends or the app quits. It is not written to a log, not saved to disk,
+  and — the app having no network entitlement — cannot be transmitted at all. We never receive
+  any of it.</p>
+  <p><b>What it writes.</b> Only when you press Install: hook entries in
+  <code>~/.claude/settings.json</code>, after a timestamped backup of that file, appended
+  alongside your own entries rather than replacing them. Remove takes out only the entries we
+  added. The app also keeps a launcher, a local key and its own settings in
+  <code>~/.dynochess</code>. If the app is deleted, the launcher removes our hook entries itself.</p>
+  <p><b>Jumping back to the terminal.</b> Clicking a session asks macOS to bring the right
+  terminal forward. macOS asks for your permission the first time you do this for a given
+  terminal application, and you can withdraw it in System Settings → Privacy &amp; Security →
+  Automation. We use it to raise a window and select a tab, nothing else.</p>
+  <p>Dyno Chess is not affiliated with, endorsed by or sponsored by Anthropic. Your use of Claude
+  Code is governed by Anthropic's own terms and privacy policy; we are not a party to it and have
+  no visibility into your account.</p>
 
   <h3>This website</h3>
   <p>This site is a static page hosted on <b>GitHub Pages</b>. We set no cookies, run no
@@ -156,6 +192,10 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   <p>The free tier of Dyno Chess remains free and fully functional whether or not you ever
   buy anything. The 14-day trial of Pro starts at first launch and, when it ends, the app
   becomes the free version rather than stopping.</p>
+  <p>Where a feature is metered rather than absent on the free tier — three puzzles a day, three
+  hints a day, five agent approvals a day — Pro removes the limit. Those numbers are what the
+  current version ships; we may change them for future versions, but never for a licence already
+  sold, and the free tier will never become unusable.</p>
 
   <h3>Delivery</h3>
   <p>Your licence key is emailed to the address given at checkout, normally within a few
@@ -169,6 +209,28 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   full GPLv3 text ships inside the disk image alongside a link to the exact source revision
   the bundled binary was built from, and nothing in these terms restricts any right the
   GPLv3 grants you over that engine.</p>
+
+  <h3>The Claude Code integration</h3>
+  <p>Dyno Chess can display your Claude Code sessions and, on Pro, let you approve or reject an
+  agent's permission request from the island. Three things follow from that, and we would rather
+  say them here than have you find them out.</p>
+  <ul>
+    <li><b>You are responsible for what you approve.</b> Approving from the island is exactly the
+      same act as approving in the terminal: the agent then runs that command on your Mac. We pass
+      your decision through and do not inspect, filter or vet what is being asked for. Approve
+      only what you would approve in a terminal, and use Always allow only where you would.</li>
+    <li><b>It is built to fail open.</b> If the app is not running, is quit mid-decision or errors,
+      the integration returns no decision and Claude Code continues through its own permission
+      flow. It cannot block your agent, and it is not a security control — it is a more convenient
+      place to answer the same question.</li>
+    <li><b>It depends on somebody else's interface.</b> The integration uses Claude Code's
+      published hook interface, which Anthropic may change or withdraw at any time. We will follow
+      such changes where we reasonably can, but continued compatibility is not something we can
+      promise, and it is not the basis on which the licence is sold.</li>
+  </ul>
+  <p><b>Claude</b> and <b>Claude Code</b> are trademarks of Anthropic PBC, used here only to
+  identify the software Dyno Chess works with. Dyno Chess is an independent product, not
+  affiliated with, endorsed by or sponsored by Anthropic.</p>
 
   <h3>What we do not promise</h3>
   <p>The software is provided "as is". To the fullest extent permitted by law we disclaim
@@ -219,6 +281,7 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   <a href="#refunds">Refunds</a>
   <a href="mailto:dyno@bixxter.com">Contact</a>
   <span>Stockfish is GPLv3 and ships with its licence.</span>
+  <span>Claude and Claude Code are trademarks of Anthropic PBC.</span>
 </div>
 
 <script>
