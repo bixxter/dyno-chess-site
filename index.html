@@ -328,7 +328,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 
 <nav class="nav" id="nav"><div class="wrap nav-in">
   <a class="brand" href="#top"><span id="brandIcon"></span><span>Dyno Chess</span></a>
-  <span class="pill">v0.5.0</span>
+  <span class="pill">v0.6.0</span>
   <span class="nav-sp"></span>
   <a class="txt" href="#agents">Agents</a>
   <a class="txt" href="#price">Pricing</a>
@@ -346,8 +346,8 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <ul class="facts">
     <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>No network access</li><li>Works with Claude Code</li>
   </ul>
-  <p class="newline"><a href="#agents"><b>New in 0.3</b> — the same notch watches your Claude Code
-    sessions and tells you when the agent is waiting on you &#8594;</a></p>
+  <p class="newline"><a href="#features"><b>New in 0.6</b> — every game you finish gets graded, and turns
+    into a card you can paste straight into a chat &#8594;</a></p>
 </header>
 
 <section class="wrap stage">
@@ -387,7 +387,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 </section>
 
 <section class="sec wrap" id="agents">
-  <p class="kicker">New in 0.3 · Claude Code</p>
+  <p class="kicker">Claude Code</p>
   <h2 class="h2-big">You were already waiting.<br>Now the wait has a board.</h2>
   <p class="sec-lede">You send Claude Code off to work and then sit there watching a terminal, in
     case it asks something. Dyno Chess puts those sessions in a strip under the board — and when the
@@ -449,7 +449,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     affiliated with Anthropic.</p>
 </section>
 
-<section class="sec wrap">
+<section class="sec wrap" id="features">
   <div class="grid">
     <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 20h8M9 20l.6-4h4.8l.6 4M9.6 16C8 14 7 12 7 10V8l2 1 1-2 2 2 2-2 1 2 2-1v2c0 2-1 4-2.6 6"/></svg>
       <h2>Nine opponents,<br>400 to 3000</h2><p>From someone who hangs a queen to full-strength Stockfish.</p></div>
@@ -464,7 +464,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l7 3v6c0 4.2-2.8 7.5-7 9-4.2-1.5-7-4.8-7-9V6z"/><path d="M9.5 12.2l1.8 1.8 3.4-3.6"/></svg>
       <h2>Never phones<br>home</h2><p>No account, no telemetry, no network entitlement. Check it with codesign yourself.</p></div>
     <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>
-      <h2>Every game<br>kept as PGN</h2><p>Your history is a text file you can take anywhere. No lock-in.</p></div>
+      <h2>Every game<br>kept as PGN</h2><p>Export one game or your whole history as a plain text file, and import an archive from anywhere else. No lock-in, in either direction.</p></div>
     <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M7 21h10"/></svg>
       <h2>Stays put above<br>full screen</h2><p>Works over full-screen apps, across Spaces, on every display.</p></div>
     <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9.5 9a2.5 2.5 0 113.2 2.4c-.7.2-1.2.9-1.2 1.6v.5"/><circle cx="12" cy="17.5" r=".9" fill="currentColor" stroke="none"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
@@ -475,6 +475,10 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
       <h2>Your agents,<br>under the board</h2><p>A live strip of Claude Code sessions: what each one is doing, how long it's been, and which one is waiting on you.</p></div>
     <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 12.5V17a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h8"/><path d="M8.5 11.5l3 3L21 5"/></svg>
       <h2>Approve from<br>the notch</h2><p>Answer a permission prompt without hunting for the terminal. Five a day free, unlimited on Pro.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20V10M10 20V4M16 20v-7M22 20H3"/></svg>
+      <h2>Every game,<br>graded afterwards</h2><p>Accuracy for both sides, every mistake and blunder marked, and the move the engine would have played instead. The two numbers are free; the move-by-move breakdown is Pro.</p></div>
+    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 14l4-4 3 3 3-4 4 5"/><circle cx="15.5" cy="8" r="1.3"/></svg>
+      <h2>A card worth<br>posting</h2><p>The final position, the dino in its winning colour and how you got there, copied as one image with the moves as plain text underneath. Free, and always will be.</p></div>
   </div>
 </section>
 
@@ -507,7 +511,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Unlimited hints and post-game review</span></li>
         <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Every update to this version, free</span></li>
       </ul>
-      <p class="anchor">Chess.com Diamond is $119.99 a year. Every year.</p>
+      <p class="anchor">Subscriptions bill you every year, forever. This bills you once.</p>
       <div class="cta-row" style="margin-top:1.25rem">
         <span class="btn btn-soon" id="buy">Coming soon</span>
         <span style="font-size:.85rem;color:var(--ink-faint)">14 days free, then it keeps working as Free.</span>
