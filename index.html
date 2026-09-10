@@ -2,12 +2,69 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dyno Chess — chess that lives in your MacBook's notch</title>
-<meta name="description" content="A full chess game in your MacBook's notch. Hover to play a move against nine opponents, then get back to work. It also watches your Claude Code sessions and tells you when the agent needs an answer. Native, offline, no account.">
-<meta property="og:title" content="Dyno Chess">
-<meta property="og:description" content="Chess that doesn't steal your day — and your Claude Code sessions in the same notch.">
+<!-- viewport-fit=cover is what makes every env(safe-area-inset-*) below resolve
+     to something other than 0 on a notched iPhone. Without it the gutters and
+     the bottom bar silently lose their safe-area handling. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- The brand goes at the back of the title on purpose: nobody searches "Dyno
+     Chess", they search "macbook notch app" and "mac notch chess", and the
+     front of the tag is what gets weighted. 52 characters, inside the ~580px
+     Google renders before it truncates. -->
+<title>Chess in your MacBook's notch — Dyno Chess for macOS</title>
+<meta name="description" content="A full chess game in your MacBook's notch. Hover, play a move, get back to work. It also shows your Claude Code sessions. macOS 14+, offline, no account.">
+<link rel="canonical" href="https://dynochess.bixxter.com/">
+<meta name="author" content="Asatulla Dadabaev">
+<!-- max-image-preview:large is the switch that lets the card below be used at
+     full size in Discover and in image results instead of as a 90px thumbnail. -->
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+
+<!-- ── the unfurl ──────────────────────────────────────────────────────────
+     og:title is the bold line Slack, iMessage, Telegram and Discord print.
+     "Dyno Chess" on its own told a reader nothing the URL had not already told
+     them. og:url has to match the canonical exactly, trailing slash and all,
+     or the page gets cached under two identities.
+
+     The image is fetched by the unfurling service's crawler, never by the
+     visitor's browser — nothing on this page references it — so the promise
+     that the page makes no outbound request until Buy is clicked still holds.
+     Regenerate it with `node Tools/social/render.mjs og`. If the artwork ever
+     changes materially, ship it under a NEW filename: Slack, Facebook,
+     Telegram and iMessage all cache the bitmap by URL and there is no way to
+     flush all four. -->
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Dyno Chess">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://dynochess.bixxter.com/">
+<meta property="og:title" content="Dyno Chess — chess in your MacBook's notch">
+<meta property="og:description" content="Chess that doesn't steal your day. It lives in your MacBook's notch — hover, play a move, get back to work. It also shows which Claude Code session is waiting on you.">
+<meta property="og:image" content="https://dynochess.bixxter.com/assets/social/og.png">
+<meta property="og:image:secure_url" content="https://dynochess.bixxter.com/assets/social/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A MacBook notch opened into a full chess board, beside the words: Chess that doesn't steal your day.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Dyno Chess — chess in your MacBook's notch">
+<meta name="twitter:description" content="Chess that doesn't steal your day. It lives in your MacBook's notch — hover, play a move, get back to work. It also shows which Claude Code session is waiting on you.">
+<meta name="twitter:image" content="https://dynochess.bixxter.com/assets/social/og.png">
+<meta name="twitter:image:alt" content="A MacBook notch opened into a full chess board, beside the words: Chess that doesn't steal your day.">
+<!-- No twitter:site and no twitter:creator: there is no handle, and a guessed
+     one credits the card to somebody else. -->
+
+<!-- ── icons ───────────────────────────────────────────────────────────────
+     The .ico comes first: browsers read the list in order and the SVG line
+     overrides it wherever SVG favicons work, which leaves the .ico for
+     everything that doesn't. theme-color is the page background rather than
+     the mascot green — it paints the browser's own chrome, and a green title
+     bar above a paper page reads as a bug. -->
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#fbf6ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17120e" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 <style>
 /* ── tokens ─────────────────────────────────────────────────────────────
    Every colour here is either a chess board square or a state colour read
@@ -19,8 +76,11 @@
   --ink-soft:   #6d5c4d;
   --ink-faint:  #a3948a;
   --line:       #e3d8c6;
-  --sq-light:   #efdfc6;
-  --sq-dark:    #8b6a4f;
+  /* BoardPalette.classic, 0.93/0.86/0.74 and 0.55/0.40/0.27. These were close
+     but not equal to the app's own squares, which made the comment above a
+     claim the file did not keep. */
+  --sq-light:   #eddbbd;
+  --sq-dark:    #8c6645;
   --dino-idle:  #66b3ff;
   --dino-play:  #66e680;
   --dino-lost:  #ff6666;
@@ -61,12 +121,23 @@ body {
   margin: 0; background: var(--paper); color: var(--ink);
   font-family: var(--sans); font-size: 17px; line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  /* iOS paints a translucent grey rectangle on every tap of a link, a button,
+     a summary and — once the demo is live — every board square. Removing it is
+     only safe because every one of those has an :active state below. */
+  -webkit-tap-highlight-color: transparent;
 }
 a { color: inherit; }
 :focus-visible { outline: 2px solid var(--dino-idle); outline-offset: 3px; border-radius: 6px; }
 
-.wrap { max-width: 80rem; margin: 0 auto; padding: 0 1.5rem; }
-@media (min-width: 1280px) { .wrap { padding: 0 4rem; } }
+/* padding-inline, not the `padding` shorthand. Six of the eight regions that
+   carry .wrap also carry a later single-class rule with a `padding` shorthand
+   in it, and a shorthand resets the sides this is trying to set. Every one of
+   those rules is now padding-block for the same reason. */
+.wrap {
+  max-width: 80rem; margin: 0 auto;
+  padding-inline: max(1.5rem, env(safe-area-inset-left)) max(1.5rem, env(safe-area-inset-right));
+}
+@media (min-width: 1280px) { .wrap { padding-inline: 4rem; } }
 
 /* ── nav ─────────────────────────────────────────────────────────────── */
 .nav {
@@ -74,7 +145,7 @@ a { color: inherit; }
   border-bottom: 1px solid transparent; transition: border-color .3s;
 }
 .nav.is-stuck { border-bottom-color: var(--line); }
-.nav-in { display: flex; align-items: center; gap: .75rem; padding: 1rem 0; }
+.nav-in { display: flex; align-items: center; gap: .75rem; padding-block: 1rem; }
 .brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; font-weight: 700; letter-spacing: -.02em; }
 .brand svg { width: 30px; height: 30px; border-radius: 9px; background: var(--ink); padding: 4px; }
 .pill {
@@ -84,7 +155,6 @@ a { color: inherit; }
 }
 .nav-sp { flex: 1; }
 .nav a.txt { text-decoration: none; color: var(--ink-soft); font-size: .95rem; }
-.nav a.txt:hover { color: var(--ink); }
 
 /* ── buttons ─────────────────────────────────────────────────────────── */
 .btn {
@@ -93,7 +163,19 @@ a { color: inherit; }
   padding: .7rem 1.15rem; border-radius: 11px; border: 1px solid transparent;
   transition: transform .15s ease, opacity .15s ease;
 }
-.btn:hover { transform: translateY(-1px); opacity: .92; }
+/* Every :hover in this file is behind this guard. On iOS a hover state latches
+   after a tap and stays until the visitor taps elsewhere, so an unguarded
+   `.btn:hover { transform }` leaves the two buttons that matter looking stuck.
+   The :active states below are the touch feedback that replaces it. */
+@media (hover: hover) and (pointer: fine) {
+  .nav a.txt:hover { color: var(--ink); }
+  .btn:hover { transform: translateY(-1px); opacity: .92; }
+  .btn-soon:hover { transform: none; opacity: 1; }
+  .mini button:hover { background: rgba(255,255,255,.2); }
+  .newline a:hover { color: var(--ink); }
+}
+.btn:active { transform: translateY(1px); opacity: .9; }
+summary:active { opacity: .6; }
 .btn-ghost { background: transparent; color: var(--ink); border-color: var(--line); }
 /* The checkout placeholder, shown until Paddle.js loads and swaps in a real
    button (and left standing with JS off). A button that looks clickable but
@@ -102,7 +184,6 @@ a { color: inherit; }
   background: transparent; color: var(--ink-faint); border-color: var(--line);
   border-style: dashed; cursor: default;
 }
-.btn-soon:hover { transform: none; opacity: 1; }
 .btn .chip {
   font-family: var(--mono); font-size: .8rem; background: var(--ink); color: var(--paper);
   padding: .15rem .45rem; border-radius: 7px;
@@ -110,8 +191,8 @@ a { color: inherit; }
 .btn-ghost .chip { background: var(--ink); color: var(--paper); }
 
 /* ── hero ────────────────────────────────────────────────────────────── */
-.hero { padding: 5rem 0 0; }
-@media (min-width: 640px) { .hero { padding: 8rem 0 0; } }
+.hero { padding-block: 5rem 0; }
+@media (min-width: 640px) { .hero { padding-block: 8rem 0; } }
 h1 {
   margin: 0; font-size: clamp(2.9rem, 9vw, 6rem); line-height: .96;
   letter-spacing: -.035em; font-weight: 800; max-width: 15ch; text-wrap: balance;
@@ -148,7 +229,8 @@ mark::after {
 .menubar {
   position: absolute; inset: 0 0 auto 0; height: 26px; display: flex; align-items: center;
   gap: 1rem; padding: 0 .9rem; color: rgba(255,255,255,.72); font-size: 11.5px;
-  background: rgba(0,0,0,.22); backdrop-filter: blur(12px);
+  background: rgba(0,0,0,.22);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
 }
 .menubar .right { margin-left: auto; font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
@@ -167,7 +249,14 @@ mark::after {
   width: min(560px, 88%); height: min(340px, 74%); border-radius: 0 0 26px 26px;
   padding: 10px 12px 12px; cursor: default; align-items: stretch;
 }
-.collapsed { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+/* A real <button>, stripped back to the pill it looks like. */
+.collapsed {
+  display: flex; align-items: center; justify-content: space-between; width: 100%;
+  background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer;
+}
+/* .notch clips its overflow, so an outset ring on the only keyboard-reachable
+   control in the demo would be invisible. */
+.collapsed:focus-visible { outline-offset: -3px; }
 .notch.open .collapsed { display: none; }
 .panel { display: none; width: 100%; gap: 12px; }
 .notch.open .panel { display: flex; }
@@ -190,6 +279,7 @@ mark::after {
 .sq.sel { box-shadow: inset 0 0 0 3px var(--dino-play); }
 .sq.last { box-shadow: inset 0 0 0 3px rgba(102,230,128,.45); }
 .sq.chk { box-shadow: inset 0 0 0 3px var(--dino-lost); }
+.sq:active { filter: brightness(1.12); }
 .sq .dot { position: absolute; width: 26%; height: 26%; border-radius: 50%; background: rgba(36,26,18,.32); pointer-events: none; }
 .sq .pc { color: #1c1712; text-shadow: 0 1px 0 rgba(255,255,255,.35); }
 .sq .pc.w { color: #fffdf8; text-shadow: 0 1px 2px rgba(0,0,0,.5); }
@@ -210,17 +300,84 @@ mark::after {
   flex: 1; font: inherit; font-size: 11px; padding: 5px 0; border-radius: 7px; cursor: pointer;
   background: rgba(255,255,255,.12); color: #fff; border: 0;
 }
-.mini button:hover { background: rgba(255,255,255,.2); }
 .hint-line {
   margin: .9rem 0 0; font-size: .9rem; color: var(--ink-faint); display: flex; align-items: center; gap: .4rem;
 }
+.hint-line b { color: var(--ink); font-weight: 600; }
 .hint-line .arw { animation: nudge 2.4s ease-in-out infinite; }
 @keyframes nudge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+
+/* ── the hover invitation ────────────────────────────────────────────────
+   Visitors were reading the mock as a picture of a laptop and leaving
+   without ever finding the game: nothing about a black pill says point at
+   me. So the page points. A ghost cursor drifts up from inside the screen,
+   settles on the notch and drops a label; the pill breathes and leans ten
+   pixels wider; a ring leaves it like a radar echo.
+
+   All of it is decoration in the strict sense — aria-hidden, no pointer
+   events, no DOM the demo depends on — and all of it is over the moment a
+   real pointer arrives, which is what keeps it an invitation rather than a
+   thing you learn to ignore. .only-wide takes it off phones, where the demo
+   already plays itself. The `on` class carries every animation so each
+   showing starts the glide from the beginning rather than mid-flight. */
+.tease {
+  position: absolute; inset: 0; z-index: 6; pointer-events: none;
+  opacity: 0; transition: opacity .45s ease;
+}
+.tease.on { opacity: 1; }
+
+.tease-cur { position: absolute; left: 50%; top: 30px; }
+.tease.on .tease-cur { animation: glide 3.6s cubic-bezier(.32,.85,.3,1) infinite; }
+.tease-cur svg { display: block; filter: drop-shadow(0 3px 6px rgba(0,0,0,.55)); }
+.tease-tip {
+  position: absolute; left: 17px; top: 21px; white-space: nowrap;
+  font-family: var(--mono); font-size: 11px; letter-spacing: .02em;
+  background: var(--dino-play); color: #10240f; padding: 3px 7px; border-radius: 7px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.4);
+}
+.tease-ring {
+  position: absolute; top: 0; left: 50%; width: 210px; height: 30px;
+  border: 2px solid var(--dino-play); border-radius: 0 0 16px 16px;
+  transform-origin: 50% 0; opacity: 0;
+}
+.tease.on .tease-ring { animation: echo 3.6s ease-out infinite; }
+
+/* The pill, leaning towards the visitor. Width is the part that says "this
+   thing moves"; it is safe to animate here because .notch transitions the
+   same property, so pulling the class mid-peak eases back instead of
+   snapping. The animation is scoped away the moment the panel is open. */
+.notch.hint:not(.open) { animation: lean 3.6s ease-in-out infinite; }
+
+@keyframes glide {
+  0%   { transform: translate(78px, 104px) scale(.92); opacity: 0; }
+  12%  { opacity: 1; }
+  46%  { transform: translate(6px, -10px) scale(1); }
+  54%  { transform: translate(6px, -15px) scale(.95); }   /* the settle */
+  62%  { transform: translate(6px, -10px) scale(1); }
+  86%  { transform: translate(6px, -10px) scale(1); opacity: 1; }
+  100% { transform: translate(6px, -10px) scale(1); opacity: 0; }
+}
+@keyframes echo {
+  0%, 46%   { transform: translateX(-50%) scale(1); opacity: 0; }
+  54%       { opacity: .8; }
+  84%, 100% { transform: translateX(-50%) scale(1.45); opacity: 0; }
+}
+@keyframes lean {
+  0%, 40%, 100% { width: 210px; box-shadow: 0 12px 34px rgba(0,0,0,.45); }
+  56%, 70%      { width: 220px; box-shadow: 0 12px 34px rgba(0,0,0,.45), 0 0 0 5px rgba(102,230,128,.18); }
+}
+
+/* Reduced motion: the same invitation, said standing still. The global rule
+   at the foot of this sheet flattens every animation to nothing, which would
+   leave the cursor parked on its last keyframe — invisible. So `still` drops
+   the animation outright, puts the cursor where the glide would have ended,
+   and takes the echo away entirely. */
+.tease.still .tease-cur { animation: none; transform: translate(6px, -10px); }
+.tease.still .tease-ring { display: none; }
 
 /* ── the agent strip ─────────────────────────────────────────────────── */
 .newline { margin: 1.5rem 0 0; font-size: .92rem; max-width: 46ch; }
 .newline a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--line); }
-.newline a:hover { color: var(--ink); }
 .newline b { color: var(--ink); font-weight: 600; }
 .kicker {
   font-family: var(--mono); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase;
@@ -234,6 +391,9 @@ mark::after {
 .strip {
   margin-top: 2.75rem; background: #000; border-radius: 22px; padding: 14px 16px;
   display: grid; gap: 8px; box-shadow: var(--shadow); overflow-x: auto;
+  /* A horizontal fling inside this box would otherwise reach Safari's
+     back-swipe and navigate away from the page. */
+  overscroll-behavior-x: contain;
 }
 .arow {
   display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 10px;
@@ -266,17 +426,24 @@ mark::after {
 }
 
 /* ── features ────────────────────────────────────────────────────────── */
-.sec { padding: 6rem 0; }
+.sec { padding-block: 6rem; }
+/* The three section headings used to carry this as a duplicated inline style. */
+.sec-h2 { font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -.03em; margin: 0 0 2rem; font-weight: 800; }
 .grid { display: grid; gap: 2.5rem 1.5rem; grid-template-columns: 1fr; }
 @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1024px) { .grid { grid-template-columns: repeat(4, 1fr); } }
-.feat h2 { margin: .9rem 0 0; font-size: 1.5rem; line-height: 1.15; letter-spacing: -.02em; font-weight: 700; }
+/* h3, not h2: these are card titles under #features' own h2. Fourteen h2s
+   under no h2 flattened "Nine opponents" to the same rank as "Buy it once." */
+.feat h3 { margin: .9rem 0 0; font-size: 1.5rem; line-height: 1.15; letter-spacing: -.02em; font-weight: 700; }
 .feat p { margin: .45rem 0 0; color: var(--ink-soft); font-size: .95rem; }
 .ico { width: 44px; height: 44px; color: var(--ink); }
 
 /* ── price ───────────────────────────────────────────────────────────── */
 .price-wrap { display: grid; gap: 1.5rem; grid-template-columns: 1fr; }
-@media (min-width: 900px) { .price-wrap { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) {
+  .price-wrap { grid-template-columns: 1fr 1fr; }
+  .price-wrap .free { order: -1; }
+}
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 1.4rem; padding: 1.75rem; }
 .card h3 { margin: 0; font-size: 1.1rem; letter-spacing: -.01em; }
 .big { font-size: 3rem; font-weight: 800; letter-spacing: -.03em; margin: .5rem 0 0; }
@@ -290,7 +457,13 @@ mark::after {
 /* ── faq ─────────────────────────────────────────────────────────────── */
 details { border-top: 1px solid var(--line); padding: 1.1rem 0; }
 details:last-of-type { border-bottom: 1px solid var(--line); }
-summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 1rem; }
+/* The negative margin keeps the FAQ's visual rhythm while giving each row a
+   48px hit area instead of 26px. */
+summary {
+  cursor: pointer; font-weight: 600; list-style: none; display: flex;
+  justify-content: space-between; gap: 1rem;
+  padding-block: .55rem; margin-block: -.55rem;
+}
 summary::-webkit-details-marker { display: none; }
 summary::after { content: "+"; color: var(--ink-faint); font-weight: 400; }
 details[open] summary::after { content: "–"; }
@@ -298,12 +471,6 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 
 /* ── footer ──────────────────────────────────────────────────────────── */
 .foot { padding-top: 5rem; overflow: hidden; }
-.foot-row { display: flex; gap: .6rem; align-items: center; }
-.sq-btn {
-  width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px;
-  border: 1px solid var(--line); color: var(--ink-soft); text-decoration: none;
-}
-.sq-btn:hover { color: var(--ink); }
 /* One line, allowed to run past the gutters and clip — the wordmark is a
    texture, not a label. */
 .wordmark {
@@ -311,24 +478,417 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   font-size: clamp(3rem, 15.5vw, 13rem); color: var(--ink); opacity: .09;
   user-select: none; white-space: nowrap;
 }
-.legal { padding: 1.5rem 0 3rem; font-size: .82rem; color: var(--ink-faint); display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
-
-.mobile-note {
-  display: none; margin-top: 1rem; font-size: .9rem; color: var(--ink-soft);
-  border: 1px dashed var(--line); border-radius: var(--radius); padding: .8rem 1rem;
+.legal {
+  padding-block: 1.5rem 3rem; font-size: .82rem; color: var(--ink-faint);
+  display: flex; flex-wrap: wrap; gap: .75rem 1rem;
 }
-@media (max-width: 700px) { .mobile-note { display: block; } .notch { display: none; } }
+.legal a { padding-block: .35rem; }
+
+/* Two lines of supporting copy that used to carry their colour as an inline
+   style, which no media query can reach past. */
+.quiet { color: var(--ink-faint); }
+
+/* Replaced by the <noscript> block below when there is no script to draw
+   the demo. */
+#nojs { display: none; }
+
+/* Shown on one side of 700px only. Both variants are in the markup so the
+   swap survives with JavaScript off. */
+.only-narrow { display: none; }
+
+/* ── the bottom bar ──────────────────────────────────────────────────────
+   A phone visitor cannot run a Mac app, so the one useful action here is
+   getting the link onto the Mac they will run it on. Hidden until JS has
+   confirmed the platform can actually do it — the same honesty as .btn-soon. */
+.bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; display: none;
+  align-items: center; gap: .75rem;
+  padding: .7rem max(1.25rem, env(safe-area-inset-left))
+           calc(.7rem + env(safe-area-inset-bottom, 0px)) max(1.25rem, env(safe-area-inset-right));
+  background: var(--paper); border-top: 1px solid var(--line);
+  transform: translateY(110%); transition: transform .25s ease;
+}
+.bar.on { transform: none; }
+.bar .what { font-size: .8rem; color: var(--ink-soft); line-height: 1.25; }
+.bar .btn { margin-left: auto; flex: none; white-space: nowrap; }
+
+@media (max-width: 700px) {
+  .only-narrow { display: block; }
+  .only-wide { display: none; }
+  button.only-narrow, a.only-narrow { display: inline-flex; }
+  .bar.armed { display: flex; }
+
+  /* Nav: four text links plus a Download button plus the pill add up to 459px
+     and nothing in the row can shrink, so the whole document panned sideways
+     at every phone width. The links go; the footer repeats all of them, and
+     the bar below carries the one action. */
+  .nav-in > a.txt, .nav-in > .btn { display: none; }
+  .nav-in { padding-block: .3rem; gap: .5rem; }
+  .brand, .pill { padding-block: .55rem; }
+  .brand svg { width: 26px; height: 26px; border-radius: 8px; }
+
+  /* Breaks written for a wide heading put one word on a line of its own here. */
+  .sec-h2 br, .h2-big br { display: none; }
+
+  /* Vertical air, halved. 80px of hero padding plus 96px per section is
+     768px of nothing on a 650px screen. */
+  .hero { padding-block: 2.25rem 0; }
+  .sec { padding-block: 3.25rem; }
+  h1 { font-size: clamp(2.35rem, 11vw, 6rem); }
+  .stage { margin-top: 2.25rem; }
+  /* The bar grows by env(safe-area-inset-bottom) on a phone with a home
+     indicator, so the space kept for it has to grow by the same amount. */
+  body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
+
+  /* The load-bearing faint text, promoted. #a3948a on #fbf6ee is 2.73:1,
+     which is a deliberate hierarchy on a desk and invisible on a phone held
+     outdoors. The tokens are not touched — they mirror the app. */
+  .facts, .hint-line, .strip-cap, .anchor, .legal, .quiet { color: var(--ink-soft); }
+  .facts { font-size: .82rem; }
+
+  /* An inline <a> that wraps draws its border under both fragments and reads
+     as two links. */
+  .newline a {
+    border-bottom: 0; text-decoration: underline;
+    text-decoration-color: var(--line); text-underline-offset: 3px;
+  }
+
+  /* The mock stops pretending to be a whole laptop and becomes what it is on
+     a phone: the top edge of a screen, with the panel hanging off it. The
+     16:10 frame is what breaks — at 375px it is 327x204, and a panel at 74%
+     of that is 151px of board. */
+  .mac { aspect-ratio: auto; border-radius: 1.25rem 1.25rem .75rem .75rem; padding: 26px 8px 8px; }
+  .menubar {
+    height: 24px; font-size: 10.5px; gap: .7rem; padding-inline: .6rem; white-space: nowrap;
+  }
+  .menubar span:nth-child(3), .menubar span:nth-child(4), .menubar span:nth-child(5) { display: none; }
+  /* Scoped to .open on purpose. JavaScript opens the panel on load here, but
+     with JavaScript off nothing can draw a board, and a phone would otherwise
+     be shown an empty black rectangle instead of the collapsed pill. */
+  .notch {
+    position: static; transform: none; width: 100%; height: auto;
+    padding: 10px; cursor: default;
+  }
+  .notch, .notch.open { border-radius: 0 0 18px 18px; }
+  .notch.open { width: 100%; height: auto; padding: 10px; }
+  .notch.open .panel { display: flex; flex-direction: column; gap: 8px; }
+  .board { height: auto; width: 100%; }
+  .side { flex: none; }
+  .opp { justify-content: center; }
+  .moves { display: none; }
+  .status { font-size: 12.5px; text-align: center; }
+  .mini button { font-size: 13px; padding: 10px 0; border-radius: 9px; }
+
+  /* The strip wraps instead of scrolling. 217px of every row was off-screen
+     at 375px, and what was hidden was exactly the Approve / Always / Reject
+     buttons the section exists to show. */
+  .strip { overflow-x: visible; padding: 12px; }
+  .arow { min-width: 0; flex-wrap: wrap; row-gap: 8px; }
+  /* Basis 0, not 100% and not auto. A wrapping flex container breaks lines on
+     the *hypothetical* main size, before any shrinking happens, so a basis of
+     either the content width or 100% puts the name on its own line and leaves
+     the 8px status dot sitting alone above it. */
+  .anm { flex: 1 1 0; min-width: 0; }
+  .atime { order: 3; }
+  .abtns { order: 4; flex: 1 1 100%; }
+  .abtn { padding: .45rem .6rem; }
+
+
+  /* The wordmark is meant to run past both gutters and clip. clamp()'s 3rem
+     floor stopped it short of them on every phone, so it read as a small
+     stray heading instead of as texture. */
+  .wordmark { font-size: 22vw; }
+}
+
+/* Two columns rather than one: fourteen cards stacked is 3115px, five screens
+   of feature list before the price. Nothing is hidden and no JS is involved. */
+@media (max-width: 639px) {
+  .grid { grid-template-columns: 1fr 1fr; gap: 1.75rem 1rem; }
+  .ico { width: 30px; height: 30px; }
+  .feat h3 { font-size: 1.05rem; margin-top: .6rem; }
+  .feat h3 br { display: none; }   /* breaks written for a 4-column desktop grid */
+  .feat p { font-size: .88rem; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
 </style>
+
+<!-- The whole hero mock is drawn by script — the board's 64 squares, the
+     mascot and the clock are empty markup until it runs — so without it the
+     mock is a black rectangle and the caption underneath is an instruction
+     nobody can follow. CSS cannot detect JavaScript, and hiding the mock by
+     media query would take the board away from the phones this page was
+     rebuilt for, so the fallback lives here where it belongs. -->
+<noscript><style>
+  .stage .mac, .hint-line.only-wide, .hint-line.only-narrow { display: none; }
+  #nojs { display: block; }
+</style></noscript>
+
+<!-- ── structured data ───────────────────────────────────────
+     Four nodes in one graph, cross-referenced by @id, so a parser gets one
+     product with one author rather than four unrelated facts.
+
+     Two honest caveats. Google stopped showing FAQ rich results for
+     commercial sites in 2023, so this will not put dropdowns under the search
+     result; the reason to ship it is that the assistants people now ask for
+     software recommendations read it verbatim, and for a product whose whole
+     pitch is that it cannot phone home it matters that the machine-readable
+     answer says so in our words. And there is deliberately no
+     aggregateRating: inventing one is a policy violation and, more to the
+     point, a lie on a page that sells itself on being checkable with
+     codesign.
+
+     softwareVersion below must be bumped alongside the pill in the nav, and
+     the FAQ list must be kept in step with the <details> block above. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://dynochess.bixxter.com/#website",
+      "url": "https://dynochess.bixxter.com/",
+      "name": "Dyno Chess",
+      "description": "Chess that lives in your MacBook's notch.",
+      "inLanguage": "en",
+      "publisher": {
+        "@id": "https://dynochess.bixxter.com/#asatulla"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://dynochess.bixxter.com/#asatulla",
+      "name": "Asatulla Dadabaev",
+      "url": "https://dynochess.bixxter.com/",
+      "email": "dyno@bixxter.com",
+      "jobTitle": "Independent software developer",
+      "description": "Makes and sells Dyno Chess. One person, not a company.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "KZ"
+      },
+      "sameAs": [
+        "https://github.com/bixxter"
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://dynochess.bixxter.com/#app",
+      "name": "Dyno Chess",
+      "alternateName": "Dyno Chess for Mac",
+      "applicationCategory": "GameApplication",
+      "applicationSubCategory": "Chess",
+      "operatingSystem": "macOS 14.0 or later",
+      "processorRequirements": "Apple silicon or Intel",
+      "softwareVersion": "0.6.0",
+      "url": "https://dynochess.bixxter.com/",
+      "downloadUrl": "https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg",
+      "releaseNotes": "https://github.com/bixxter/dyno-chess-releases/releases",
+      "screenshot": "https://dynochess.bixxter.com/assets/social/og.png",
+      "image": "https://dynochess.bixxter.com/assets/social/og.png",
+      "inLanguage": "en",
+      "isAccessibleForFree": true,
+      "description": "A full chess game that lives in a MacBook's notch. Hover the notch, play a move against one of nine opponents from 400 to full strength, and it gets out of the way again. It also shows your Claude Code sessions under the board and signals in the closed notch when an agent is waiting on you. Native macOS, no account, and no network entitlement at all.",
+      "featureList": [
+        "Nine opponents from 400 to full-strength Stockfish",
+        "Weak levels that blunder the way people do",
+        "Hover the notch to play, and it leaves when the pointer does",
+        "Bullet, blitz and rapid clocks from 1+0 to 15+10",
+        "Hot-seat two-player on one Mac",
+        "7,200 Lichess tactics in nine difficulty bands",
+        "Post-game accuracy and blunder review",
+        "Every game exportable as PGN, and PGN import",
+        "A shareable result card as one image",
+        "Claude Code sessions in a strip under the board",
+        "Approve, Always allow or Reject an agent's permission request from the notch",
+        "Works over full-screen apps, across Spaces, on every display",
+        "No account, no telemetry, no network entitlement"
+      ],
+      "author": {
+        "@id": "https://dynochess.bixxter.com/#asatulla"
+      },
+      "publisher": {
+        "@id": "https://dynochess.bixxter.com/#asatulla"
+      },
+      "mainEntityOfPage": {
+        "@id": "https://dynochess.bixxter.com/#webpage"
+      },
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Free",
+          "price": "0",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock",
+          "url": "https://dynochess.bixxter.com/#price",
+          "description": "The island, the full board and all nine opponents at full strength, forever. Three puzzles and three hints a day, five agent approvals a day."
+        },
+        {
+          "@type": "Offer",
+          "name": "Pro",
+          "price": "14.99",
+          "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock",
+          "url": "https://dynochess.bixxter.com/#price",
+          "description": "One payment, not a subscription. Three Macs, unlimited puzzles, every time control, unlimited agent approvals, full post-game review, every update to this version, and a 14-day refund with no reason required.",
+          "seller": {
+            "@type": "Organization",
+            "name": "Paddle.com Market Ltd",
+            "url": "https://www.paddle.com/",
+            "description": "Merchant of record for the purchase."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://dynochess.bixxter.com/#webpage",
+      "url": "https://dynochess.bixxter.com/",
+      "name": "Dyno Chess — chess in your MacBook's notch",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://dynochess.bixxter.com/#website"
+      },
+      "about": {
+        "@id": "https://dynochess.bixxter.com/#app"
+      },
+      "primaryImageOfPage": "https://dynochess.bixxter.com/assets/social/og.png",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why isn't it on the Mac App Store?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because it ships Stockfish, and Stockfish is licensed under the GPLv3, which is widely held to be incompatible with the App Store's terms. Downloading it here is the honest option rather than a worse one: the build is signed with a Developer ID and notarized by Apple, so Gatekeeper is satisfied, and updates come straight from this page."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it need an internet connection?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No, and it cannot use one. The app ships without the network entitlement at all, so this is verifiable rather than a promise: run codesign -d --entitlements :- \"Dyno Chess.app\" and look for yourself. There is no account, no sign-in and no analytics."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens when the trial ends?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Nothing breaks. You get 14 days of Pro when you first launch it, and after that the app quietly becomes the free version. The board, the island and all nine opponents keep working forever. You will never find your chess game held hostage."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How many Macs does one licence cover?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Three. The licence is a signed file checked on your Mac, so activating does not require the internet either."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I get a refund?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes, within 14 days, no reason required. Email dyno@bixxter.com and it gets refunded in full. The refund policy at https://dynochess.bixxter.com/legal.html#refunds spells out the details."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Who am I buying from, and how do I get help?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Dyno Chess is made and sold by Asatulla Dadabaev, one person, not a company. Support, refunds and lost licence keys all go to dyno@bixxter.com, and it is read by a person. The privacy policy and terms of sale are on one page at https://dynochess.bixxter.com/legal.html."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which engine is it, and is the source available?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Stockfish, running as a separate process over UCI, exactly as its licence intends. The full GPLv3 text ships inside the disk image alongside a link to the exact source revision the bundled binary was built from."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Three puzzles a day \u2014 is that not a bit stingy?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It is the whole feature, not a sample: you get your real rating, the rank ladder, the day streak and the theme breakdown from the first puzzle, and the app picks each one to sit just above your level. Only the count is limited. Three is about a coffee break, which is what a notch-sized board is for, and if you want to sit down and grind fifty, that is what Pro removes. The puzzles themselves come from the Lichess database, which is public domain and free forever at the source; we would rather be upfront that what you are paying for is the volume and the machinery, not the file."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does the Claude Code integration actually do?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Three things. It shows your live sessions in a strip under the board: the project, what the session is doing and how long it has been at it. It signals in the closed notch when one of them is blocked on you or has finished, so you do not keep tabbing back to check. And clicking a row takes you to the terminal that session is running in: Terminal.app and iTerm2 land on the exact tab, everything else gets raised to the front. On Pro you can answer the permission prompt from the notch itself; on Free you get five approvals a day and then it asks in the terminal as usual. It uses Claude Code's documented hooks and nothing else: no screen reading, no accessibility API, no polling of your files."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can it break my agent?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It is built so it cannot. The hook exits successfully on every path it has, including a crash, a missing binary or a bad argument, and a hook that returns no decision means Claude Code carries on through its normal permission flow. If Dyno Chess is not running, or you quit it halfway through a decision, the tool call proceeds. Hooks go into ~/.claude/settings.json only when you press Install in Settings, Agents, after a timestamped backup, appended next to your own entries rather than over them, and Remove takes out only the ones we added. If the app is deleted, the helper removes its own entries and gets out of the way."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "You say it has no network access \u2014 but it can see my agent?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Both are true, and the second is why the first still holds. Claude Code runs the hook, the hook hands the event to the app over a local socket inside your own account (file permissions, a same-user check and a per-install secret) and no packet is involved, so the network entitlement is still absent and codesign still proves it. What did change in 0.3 is that the same output now lists read-write exceptions for ~/.claude and ~/.dynochess, and Apple Events for the terminals it can jump to. All of them are named in the privacy policy, and none of them can send anything anywhere."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this an Anthropic product?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Dyno Chess is made by one person and is not affiliated with, endorsed by or sponsored by Anthropic. Claude and Claude Code are Anthropic's trademarks, used here only to say what the app works with. The integration is built on Claude Code's published hook interface, which Anthropic can change at any time."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "I don't have a notch. Does it still work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. On a Mac without a physical notch the island draws itself as a pill at the top of whichever display you choose."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this a Dynamic Island for the Mac?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "That is the shape, yes: the notch expands into a panel when you point at it and shrinks back when you leave, which is the behaviour people mean by the phrase. The difference is what is inside it. Most of the Mac apps built on that shape are a shelf: now playing, a file drop, a battery readout, ten small things. This one holds a chess game and your Claude Code sessions, and nothing else."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it sit in the menu bar?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not as a status icon \u2014 the app puts nothing in the row of icons on the right. It lives in the notch itself, plus a narrow band either side of it: 360 points across when it is closed, of which the notch is 200. On a Mac with no physical notch it draws that same pill at the top of whichever display you choose, which ends up looking like a menu bar app that got bigger when you pointed at it."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body>
 
 <nav class="nav" id="nav"><div class="wrap nav-in">
   <a class="brand" href="#top"><span id="brandIcon"></span><span>Dyno Chess</span></a>
-  <span class="pill">v0.6.0</span>
+  <!-- A real link: it is bordered and underline-free, so it looked like one
+       whatever it was, and the thing it should open is one click away anyway. -->
+  <a class="pill" href="https://github.com/bixxter/dyno-chess-releases/releases">v0.6.0</a>
   <span class="nav-sp"></span>
   <a class="txt" href="#agents">Agents</a>
   <a class="txt" href="#price">Pricing</a>
@@ -336,12 +896,21 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <a class="btn" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">Download</a>
 </div></nav>
 
+<main>
 <header class="hero wrap" id="top">
   <h1>Chess that doesn't <mark>steal</mark> your day.</h1>
-  <p class="lede">It lives in your MacBook's notch. Hover, play a move, get back to work.</p>
+  <p class="lede">A full chess game in your MacBook's notch. Hover, play a move, get back to work.</p>
   <div class="cta-row">
-    <a class="btn" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">Download for Mac <span class="chip">Free</span></a>
-    <a class="btn btn-ghost" href="#price">See what Pro costs <span class="chip">$14.99</span></a>
+    <!-- The .dmg link is the primary action on a Mac and a trap on a phone:
+         iOS Safari will happily spend the visitor's cellular allowance pulling
+         down a disk image the device cannot mount. Under 700px the narrow
+         sibling replaces it and moves the link to the Mac instead. -->
+    <a class="btn only-wide" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">Download for Mac <span class="chip">Free</span></a>
+    <!-- An <a> to the download section rather than a <button>: with JavaScript
+         off it still goes somewhere useful, and with JavaScript on the handler
+         cancels the jump and opens the share sheet instead. -->
+    <a class="btn only-narrow" href="#download" id="sendMac">Send this to my Mac</a>
+    <a class="btn btn-ghost" href="#price">See what Pro costs <span class="chip" id="proChip">$14.99</span></a>
   </div>
   <ul class="facts">
     <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>No network access</li><li>Works with Claude Code</li>
@@ -352,27 +921,35 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 
 <section class="wrap stage">
   <div class="mac" id="mac">
-    <div class="menubar">
+    <!-- The whole strip is decoration: a private-use Apple glyph, three fake
+         menu titles and a clock JS retimes every ten seconds. One attribute
+         takes all of it out of the accessibility tree. -->
+    <div class="menubar" aria-hidden="true">
       <span>&#63743;</span><span><b>Dyno Chess</b></span><span>File</span><span>Game</span><span>Window</span>
       <span class="right" id="clock">9:41</span>
     </div>
 
-    <div class="notch" id="notch" tabindex="0" role="button" aria-expanded="false"
-         aria-label="Expand the notch and play a move">
-      <div class="collapsed">
+    <!-- No role="button" on this container. ARIA makes every descendant of a
+         button presentational, which removed the board, Undo and New game —
+         the one thing the page invites you to try — from the accessibility
+         tree entirely. The collapsed state is a real <button> instead, which
+         is what it always was: the thing you press to open the panel. -->
+    <div class="notch" id="notch">
+      <button class="collapsed" type="button" id="notchToggle"
+              aria-expanded="false" aria-controls="notchPanel">
         <span id="dinoSmall"></span>
         <span class="c-label" id="cLabel">YOUR TURN</span>
-      </div>
+      </button>
 
-      <div class="panel">
-        <div class="board" id="board"></div>
+      <div class="panel" id="notchPanel">
+        <div class="board" id="board" aria-label="Chess board, you play White"></div>
         <div class="side">
           <div class="opp">
             <span id="dinoBig"></span>
             <span><span class="nm">Rookie</span><br><span class="el" id="elo">600 · blunders like a person</span></span>
           </div>
           <div class="moves" id="moves"></div>
-          <div class="status" id="status">Your move. Play e4.</div>
+          <div class="status" id="status" aria-live="polite">Your move. Play e4.</div>
           <div class="mini">
             <button type="button" id="undoBtn">Undo</button>
             <button type="button" id="newBtn">New game</button>
@@ -380,10 +957,26 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
         </div>
       </div>
     </div>
+
+    <!-- The pointer that points at the notch. Decoration only: it carries no
+         text a screen reader needs (the caption under the mock and the
+         button's own label already say it), it cannot be clicked through to,
+         and it is inert until the script decides the mock is on screen. -->
+    <div class="tease only-wide" id="tease" aria-hidden="true">
+      <span class="tease-ring"></span>
+      <span class="tease-cur">
+        <svg viewBox="0 0 16 22" width="17" height="23">
+          <path d="M2 1.6 L2 18.4 L6.2 14.4 L8.7 20.4 L11.5 19.2 L9 13.3 L14.4 13.3 Z"
+                fill="#fff" stroke="#1c1712" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+        <span class="tease-tip">hover me</span>
+      </span>
+    </div>
   </div>
 
-  <p class="hint-line"><span class="arw">&#8593;</span> Psst… hover the notch, then actually play a move. It's a real game.</p>
-  <p class="mobile-note">This is a Mac app — the playable demo needs a wider screen. Open this page on your Mac to try it.</p>
+  <p class="hint-line only-wide"><span class="arw" aria-hidden="true">&#8593;</span> Psst… <b>hover the notch</b>, then actually play a move. It's a real game.</p>
+  <p class="hint-line only-narrow">It's playing itself. Tap a piece to take over. On a Mac this sits in the notch and gets out of the way.</p>
+  <p class="hint-line" id="nojs">The playable demo needs JavaScript. The app itself needs nothing but a Mac.</p>
 </section>
 
 <section class="sec wrap" id="agents">
@@ -450,78 +1043,87 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 </section>
 
 <section class="sec wrap" id="features">
+  <!-- The largest section on the page had no heading of its own, so to an
+       outline parser it did not exist — and the "New in 0.6" link in the hero
+       landed the visitor on an unlabelled wall of cards. -->
+  <h2 class="sec-h2">Fourteen things it does<br>from inside the notch.</h2>
   <div class="grid">
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 20h8M9 20l.6-4h4.8l.6 4M9.6 16C8 14 7 12 7 10V8l2 1 1-2 2 2 2-2 1 2 2-1v2c0 2-1 4-2.6 6"/></svg>
-      <h2>Nine opponents,<br>400 to 3000</h2><p>From someone who hangs a queen to full-strength Stockfish.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5s1.2 1.5 3.5 1.5 3.5-1.5 3.5-1.5M9 9.5h.01M15 9.5h.01"/></svg>
-      <h2>A beginner that<br>plays like one</h2><p>The weak levels don't just think less. They blunder the way people do.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M9 5h6v3H9z" fill="currentColor" stroke="none"/></svg>
-      <h2>Hover to play,<br>then it's gone</h2><p>No window to arrange, no tab to close. The board leaves when your pointer does.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 1.5M9 3h6"/></svg>
-      <h2>Bullet, blitz<br>and rapid</h2><p>A real clock ticking in the notch while you work. 1+0 through 15+10.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3.5 19c.6-3 2.5-4.5 5-4.5s4.4 1.5 5 4.5M13 19c.5-2.6 2.2-4.1 4.4-4.1S21.4 16.4 22 19"/></svg>
-      <h2>Two players,<br>one Mac</h2><p>Hot-seat mode. Pass the laptop across the table.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l7 3v6c0 4.2-2.8 7.5-7 9-4.2-1.5-7-4.8-7-9V6z"/><path d="M9.5 12.2l1.8 1.8 3.4-3.6"/></svg>
-      <h2>Never phones<br>home</h2><p>No account, no telemetry, no network entitlement. Check it with codesign yourself.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>
-      <h2>Every game<br>kept as PGN</h2><p>Export one game or your whole history as a plain text file, and import an archive from anywhere else. No lock-in, in either direction.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M7 21h10"/></svg>
-      <h2>Stays put above<br>full screen</h2><p>Works over full-screen apps, across Spaces, on every display.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9.5 9a2.5 2.5 0 113.2 2.4c-.7.2-1.2.9-1.2 1.6v.5"/><circle cx="12" cy="17.5" r=".9" fill="currentColor" stroke="none"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
-      <h2>7,200 tactics,<br>thirty seconds each</h2><p>Nine difficulty bands from the Lichess database, picked to sit just above your rating. Three a day free, unlimited on Pro.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 18L14 8M14 8h-4M14 8v4"/><path d="M4 6h3M5.5 4.5v3"/><path d="M17 15h3M18.5 13.5v3"/></svg>
-      <h2>Miss it, and it<br>tells you why</h2><p>A wrong move doesn't end the puzzle. It draws what the opponent does to you, then lets you try again.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9.5l3 2.5-3 2.5M12.5 15H17"/></svg>
-      <h2>Your agents,<br>under the board</h2><p>A live strip of Claude Code sessions: what each one is doing, how long it's been, and which one is waiting on you.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 12.5V17a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h8"/><path d="M8.5 11.5l3 3L21 5"/></svg>
-      <h2>Approve from<br>the notch</h2><p>Answer a permission prompt without hunting for the terminal. Five a day free, unlimited on Pro.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20V10M10 20V4M16 20v-7M22 20H3"/></svg>
-      <h2>Every game,<br>graded afterwards</h2><p>Accuracy for both sides, every mistake and blunder marked, and the move the engine would have played instead. The two numbers are free; the move-by-move breakdown is Pro.</p></div>
-    <div class="feat"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 14l4-4 3 3 3-4 4 5"/><circle cx="15.5" cy="8" r="1.3"/></svg>
-      <h2>A card worth<br>posting</h2><p>The final position, the dino in its winning colour and how you got there, copied as one image with the moves as plain text underneath. Free, and always will be.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 20h8M9 20l.6-4h4.8l.6 4M9.6 16C8 14 7 12 7 10V8l2 1 1-2 2 2 2-2 1 2 2-1v2c0 2-1 4-2.6 6"/></svg>
+      <h3>Nine opponents,<br>400 to 3000</h3><p>From someone who hangs a queen to full-strength Stockfish.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5s1.2 1.5 3.5 1.5 3.5-1.5 3.5-1.5M9 9.5h.01M15 9.5h.01"/></svg>
+      <h3>A beginner that<br>plays like one</h3><p>The weak levels don't just think less. They blunder the way people do.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="5" width="20" height="13" rx="2"/><path d="M9 5h6v3H9z" fill="currentColor" stroke="none"/></svg>
+      <h3>Hover to play,<br>then it's gone</h3><p>No window to arrange, no tab to close. The board leaves when your pointer does.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 1.5M9 3h6"/></svg>
+      <h3>Bullet, blitz<br>and rapid</h3><p>A real clock ticking in the notch while you work. 1+0 through 15+10.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3.5 19c.6-3 2.5-4.5 5-4.5s4.4 1.5 5 4.5M13 19c.5-2.6 2.2-4.1 4.4-4.1S21.4 16.4 22 19"/></svg>
+      <h3>Two players,<br>one Mac</h3><p>Hot-seat mode. Pass the laptop across the table.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l7 3v6c0 4.2-2.8 7.5-7 9-4.2-1.5-7-4.8-7-9V6z"/><path d="M9.5 12.2l1.8 1.8 3.4-3.6"/></svg>
+      <h3>Never phones<br>home</h3><p>No account, no telemetry, no network entitlement. Check it with codesign yourself.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>
+      <h3>Every game<br>kept as PGN</h3><p>Export one game or your whole history as a plain text file, and import an archive from anywhere else. No lock-in, in either direction.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M7 21h10"/></svg>
+      <h3>Stays put above<br>full screen</h3><p>Works over full-screen apps, across Spaces, on every display.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9.5 9a2.5 2.5 0 113.2 2.4c-.7.2-1.2.9-1.2 1.6v.5"/><circle cx="12" cy="17.5" r=".9" fill="currentColor" stroke="none"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
+      <h3>7,200 tactics,<br>thirty seconds each</h3><p>Nine difficulty bands from the Lichess database, picked to sit just above your rating. Three a day free, unlimited on Pro.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 18L14 8M14 8h-4M14 8v4"/><path d="M4 6h3M5.5 4.5v3"/><path d="M17 15h3M18.5 13.5v3"/></svg>
+      <h3>Miss it, and it<br>tells you why</h3><p>A wrong move doesn't end the puzzle. It draws what the opponent does to you, then lets you try again.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9.5l3 2.5-3 2.5M12.5 15H17"/></svg>
+      <h3>Your agents,<br>under the board</h3><p>A live strip of Claude Code sessions: what each one is doing, how long it's been, and which one is waiting on you.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 12.5V17a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h8"/><path d="M8.5 11.5l3 3L21 5"/></svg>
+      <h3>Approve from<br>the notch</h3><p>Answer a permission prompt without hunting for the terminal. Five a day free, unlimited on Pro.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20V10M10 20V4M16 20v-7M22 20H3"/></svg>
+      <h3>Every game,<br>graded afterwards</h3><p>Accuracy for both sides, every mistake and blunder marked, and the move the engine would have played instead. The two numbers are free; the move-by-move breakdown is Pro.</p></div>
+    <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 14l4-4 3 3 3-4 4 5"/><circle cx="15.5" cy="8" r="1.3"/></svg>
+      <h3>A card worth<br>posting</h3><p>The final position, the dino in its winning colour and how you got there, copied as one image with the moves as plain text underneath. Free, and always will be.</p></div>
   </div>
 </section>
 
 <section class="sec wrap" id="price">
-  <h2 style="font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-.03em;margin:0 0 2rem;font-weight:800;">Buy it once.</h2>
+  <h2 class="sec-h2">Buy it once.</h2>
   <div class="price-wrap">
-    <div class="card">
-      <h3>Free, forever</h3>
-      <p class="big">$0</p>
-      <ul class="list">
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>The island, the full board, every animation</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>All nine opponents</b>, up to full strength</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Three puzzles a day</b> — with the whole ladder: your rating, your streak, your weak themes</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Untimed play, hot-seat, unlimited undo</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Live eval bar, your last five games</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Three hints a day</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Claude Code sessions in the island</b> — the strip, the signal in the notch, the jump back to the right tab, and five approvals a day</span></li>
-      </ul>
-      <p class="anchor">Strength is never the paywall. The engine plays as hard as you ask, free.</p>
-    </div>
+    <!-- Pro first in the source, and put back second on a wide screen by
+         `order` below. Reversing the two visually with column-reverse left
+         a phone reading them in one order and a screen reader in the other;
+         side by side on a desktop, source order is what a reader follows. -->
     <div class="card">
       <h3>Pro</h3>
       <p class="big"><span id="proPrice">$14.99</span> <small>once · 3 Macs</small></p>
       <ul class="list">
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Puzzles without the daily limit</b> — 7,200 tactics, as many a day as you want</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Every time control</b> — bullet, blitz, rapid, increments</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Board, piece and island themes</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Unlimited history, PGN import and batch export</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Unlimited agent approvals</b> — Approve, Always allow or Reject from the notch, no daily count</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Unlimited hints and post-game review</span></li>
-        <li><svg class="tick" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Every update to this version, free</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Unlimited puzzles</b> — all 7,200 tactics, as many a day as you want</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Every time control</b> — bullet, blitz, rapid, increments</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Board, piece and island themes</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Unlimited history</b> — PGN import and batch export</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Unlimited agent approvals</b> — Approve, Always allow or Reject from the notch, no daily count</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Unlimited hints</b>, and the move-by-move post-game review</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Every update to this version, free</span></li>
       </ul>
       <p class="anchor">Subscriptions bill you every year, forever. This bills you once.</p>
       <div class="cta-row" style="margin-top:1.25rem">
         <span class="btn btn-soon" id="buy">Coming soon</span>
-        <span style="font-size:.85rem;color:var(--ink-faint)">14 days free, then it keeps working as Free.</span>
+        <span class="quiet" style="font-size:.85rem">14 days free, then it keeps working as Free.</span>
       </div>
+    </div>
+
+    <div class="card free">
+      <h3>Free, forever</h3>
+      <p class="big">$0</p>
+      <ul class="list">
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>The island, the full board, every animation</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>All nine opponents</b>, up to full strength</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Three puzzles a day</b> — with the whole ladder: your rating, your streak, your weak themes</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Untimed play, hot-seat, unlimited undo</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Live eval bar, your last five games</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Three hints a day</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Claude Code sessions in the island</b> — the strip, the signal in the notch, the jump back to the right tab, and five approvals a day</span></li>
+      </ul>
+      <p class="anchor">Strength is never the paywall. The engine plays as hard as you ask, free.</p>
     </div>
   </div>
 </section>
 
 <section class="sec wrap" id="faq">
-  <h2 style="font-size:clamp(2rem,5vw,3.2rem);letter-spacing:-.03em;margin:0 0 2rem;font-weight:800;">Questions.</h2>
+  <h2 class="sec-h2">Questions.</h2>
 
   <details><summary>Why isn't it on the Mac App Store?</summary>
     <p>Because it ships Stockfish, and Stockfish is licensed under the GPLv3, which is widely held to be incompatible with the App Store's terms. Downloading it here is the honest option rather than a worse one: the build is signed with a Developer ID and notarized by Apple, so Gatekeeper is satisfied, and updates come straight from this page.</p></details>
@@ -561,19 +1163,27 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 
   <details><summary>I don't have a notch. Does it still work?</summary>
     <p>Yes. On a Mac without a physical notch the island draws itself as a pill at the top of whichever display you choose.</p></details>
+
+  <details><summary>Is this a Dynamic Island for the Mac?</summary>
+    <p>That is the shape, yes: the notch expands into a panel when you point at it and shrinks back when you leave, which is the behaviour people mean by the phrase. The difference is what is inside it. Most of the Mac apps built on that shape are a shelf — now playing, a file drop, a battery readout, ten small things. This one holds a chess game and your Claude Code sessions, and nothing else. Same idea, used for one purpose rather than ten.</p></details>
+
+  <details><summary>Does it sit in the menu bar?</summary>
+    <p>Not as a status icon — the app puts nothing in the row of icons on the right. It lives in the notch itself, plus a narrow band either side of it: 360 points across when it is closed, of which the notch is 200. On a Mac with no physical notch it draws that same pill at the top of whichever display you choose, which ends up looking like a menu bar app that got bigger when you pointed at it.</p></details>
 </section>
+</main>
 
 <footer class="foot wrap" id="download">
   <div class="cta-row" style="margin-bottom:1rem">
-    <a class="btn" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">Download for Mac <span class="chip">Free</span></a>
+    <a class="btn only-wide" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">Download for Mac <span class="chip">Free</span></a>
+    <a class="btn only-narrow" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">The .dmg, if you're on a Mac</a>
     <a class="btn btn-ghost" href="https://github.com/bixxter/dyno-chess-releases/releases">All versions</a>
   </div>
-  <p style="margin:0;font-size:.9rem;color:var(--ink-faint);max-width:46ch">
+  <p class="quiet" style="margin:0;font-size:.9rem;max-width:46ch">
     macOS 14 or later, Apple silicon and Intel. Signed with a Developer ID and
     notarized by Apple, so it opens without a warning; every release lists its
     SHA-256. Something wrong? <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a>.
   </p>
-  <p class="wordmark">Dyno Chess</p>
+  <p class="wordmark" aria-hidden="true">Dyno Chess</p>
 </footer>
 <div class="wrap legal">
   <span>© 2026 Dyno Chess · Asatulla Dadabaev</span>
@@ -583,6 +1193,14 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a>
   <span>Stockfish is GPLv3 and ships with its licence.</span>
   <span>Claude and Claude Code are trademarks of Anthropic PBC. Dyno Chess is independent and not affiliated with Anthropic.</span>
+</div>
+
+<!-- Ships without the `armed` class. JS adds it only after checking that this
+     browser can actually share or copy, so a device that can do neither is
+     never shown a button that does nothing. -->
+<div class="bar" id="bar">
+  <span class="what">Mac app · macOS 14+</span>
+  <button class="btn" type="button" id="barBtn">Send to my Mac</button>
 </div>
 
 <script>
@@ -710,15 +1328,20 @@ const VAL = { p: 100, n: 300, b: 320, r: 500, q: 900, k: 0 };
 
 /* The dino plays the way the app's weakest tiers do: it looks one ply
    ahead, and most of the time it picks something merely decent instead of
-   the best move. That is what makes it feel like a person. */
-function dinoMove() {
-  const ms = allMoves(bd, false);
+   the best move. That is what makes it feel like a person.
+
+   Takes a colour so the self-playing demo on a phone can drive White with the
+   same function. A random mover would shuffle a rook back and forth for a
+   minute; this one prefers captures and avoids hanging pieces, which is
+   already enough to look like a game from across a train carriage. */
+function dinoMove(white = false) {
+  const ms = allMoves(bd, white);
   if (!ms.length) return null;
   const scored = ms.map(([i, j]) => {
     const cap = bd[j] === "." ? 0 : VAL[bd[j].toLowerCase()];
     const after = apply(bd, i, j);
     let risk = 0;
-    if (attacked(after, j, true)) risk = VAL[bd[i].toLowerCase()] * 0.8;
+    if (attacked(after, j, !white)) risk = VAL[bd[i].toLowerCase()] * 0.8;
     return { i, j, s: cap - risk + Math.random() * 90 };
   }).sort((a, b) => b.s - a.s);
   const pick = Math.random() < 0.35 ? Math.min(2, scored.length - 1) : 0;
@@ -732,7 +1355,12 @@ const movesEl = document.getElementById("moves");
 const statusEl = document.getElementById("status");
 const cLabel = document.getElementById("cLabel");
 
+/* The dino's reply is on a timer, and both New game and Undo can be pressed
+   inside that window. Without the handle, the reply lands on the board that
+   replaced the one it was thinking about. */
+let replyT;
 function newGame() {
+  clearTimeout(replyT);
   bd = START.slice(); turn = true; hist = []; sel = null; over = false; lastMove = null; stack = [];
   paintDino("idle"); statusEl.textContent = "Your move. Try e4.";
   cLabel.textContent = "YOUR TURN"; draw();
@@ -775,26 +1403,29 @@ function afterMove() {
   }
   return false;
 }
+/* Lifted out of the click handler so the phone's self-playing loop can call
+   it too. Everything after the move — the reply, the mate check, the labels —
+   is identical whether a thumb or the demo picked the square. */
+function playWhite(from, to) {
+  stack.push({ bd: bd.slice(), hist: hist.slice(), lastMove });
+  hist.push(san(bd, from, to)); bd = apply(bd, from, to); lastMove = [from, to];
+  sel = null; turn = false; paintDino("play");
+  statusEl.textContent = "Thinking…"; cLabel.textContent = "THINKING"; draw();
+  if (afterMove()) return;
+  replyT = setTimeout(() => {
+    const m = dinoMove(); if (!m) return;
+    hist.push(san(bd, m.i, m.j)); bd = apply(bd, m.i, m.j); lastMove = [m.i, m.j];
+    turn = true; draw();
+    if (afterMove()) return;
+    paintDino(inCheck(bd, true) ? "lost" : "idle");
+    statusEl.textContent = inCheck(bd, true) ? "Check. Your move." : "Your move.";
+    cLabel.textContent = "YOUR TURN";
+  }, 620);
+}
 boardEl.addEventListener("click", e => {
   const cell = e.target.closest(".sq"); if (!cell || over || !turn) return;
   const i = +cell.dataset.i;
-  if (sel !== null && legal(bd, sel).includes(i)) {
-    stack.push({ bd: bd.slice(), hist: hist.slice(), lastMove });
-    hist.push(san(bd, sel, i)); bd = apply(bd, sel, i); lastMove = [sel, i];
-    sel = null; turn = false; paintDino("play");
-    statusEl.textContent = "Thinking…"; cLabel.textContent = "THINKING"; draw();
-    if (afterMove()) return;
-    setTimeout(() => {
-      const m = dinoMove(); if (!m) return;
-      hist.push(san(bd, m.i, m.j)); bd = apply(bd, m.i, m.j); lastMove = [m.i, m.j];
-      turn = true; draw();
-      if (afterMove()) return;
-      paintDino(inCheck(bd, true) ? "lost" : "idle");
-      statusEl.textContent = inCheck(bd, true) ? "Check. Your move." : "Your move.";
-      cLabel.textContent = "YOUR TURN";
-    }, 620);
-    return;
-  }
+  if (sel !== null && legal(bd, sel).includes(i)) { playWhite(sel, i); return; }
   sel = own(bd[i], true) && legal(bd, i).length ? i : null;
   draw();
 });
@@ -804,6 +1435,7 @@ document.getElementById("undoBtn").addEventListener("click", () => {
      the same SAN string, so replaying would sometimes restore the wrong one. */
   const prev = stack.pop();
   if (!prev) return;
+  clearTimeout(replyT);
   bd = prev.bd; hist = prev.hist; lastMove = prev.lastMove;
   sel = null; turn = true; over = false;
   paintDino(inCheck(bd, true) ? "lost" : "idle");
@@ -812,18 +1444,210 @@ document.getElementById("undoBtn").addEventListener("click", () => {
 
 /* ── the notch, behaving the way the app does ────────────────────────── */
 const notch = document.getElementById("notch");
+const notchToggle = document.getElementById("notchToggle");
+/* A phone has no pointer to hover with and no room for a laptop, so under 700px
+   the panel is opened once and stays open, and the board fills the width of the
+   mock. Both queries are live rather than read once: a phone turned to
+   landscape is 812px wide, which crosses the CSS breakpoint, and a `const`
+   sampled at load would leave that visitor with the wide layout and no hover
+   handlers bound to it. */
+const narrowQ = matchMedia("(max-width: 700px)");
+const calmQ = matchMedia("(prefers-reduced-motion: reduce)");
+const NARROW = narrowQ.matches;
+
 let openT, closeT;
 function setOpen(v) {
   notch.classList.toggle("open", v);
-  notch.setAttribute("aria-expanded", String(v));
+  notchToggle.setAttribute("aria-expanded", String(v));
+  /* The toggle is display:none while the panel is open, so a keyboard user who
+     pressed it would otherwise be left with focus on <body> and no way back. */
+  if (!v && !notch.contains(document.activeElement)) return;
+  if (!v) notchToggle.focus();
 }
-notch.addEventListener("mouseenter", () => { clearTimeout(closeT); openT = setTimeout(() => setOpen(true), 250); });
-notch.addEventListener("mouseleave", () => { clearTimeout(openT); closeT = setTimeout(() => setOpen(false), 400); });
-notch.addEventListener("click", () => { clearTimeout(openT); setOpen(true); });
-notch.addEventListener("keydown", e => {
-  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setOpen(!notch.classList.contains("open")); }
-  if (e.key === "Escape") setOpen(false);
+notch.addEventListener("mouseenter", () => {
+  if (narrowQ.matches) return;
+  clearTimeout(closeT); openT = setTimeout(() => setOpen(true), 250);
 });
+notch.addEventListener("mouseleave", () => {
+  if (narrowQ.matches) return;
+  clearTimeout(openT); closeT = setTimeout(() => setOpen(false), 400);
+});
+/* On document, not on .notch: once the panel is open the only focusable thing
+   inside it is the board's two buttons, and a visitor who opened it from the
+   keyboard and then tabbed away had no way to close it at all. */
+addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && !narrowQ.matches && notch.classList.contains("open")) setOpen(false);
+});
+notchToggle.addEventListener("click", () => { clearTimeout(openT); setOpen(true); });
+
+/* ── the hover invitation ────────────────────────────────────────────────
+   Feedback from the site: people did not work out that the mock is playable.
+   The animation that fixes that lives in the stylesheet; everything here is
+   about when to stop showing it.
+
+   Three rules. It only runs while the mock is actually on screen — a hint
+   nobody can see still spends its welcome. It yields the moment a real
+   pointer enters the mock, because two cursors moving at once reads as a
+   glitch, and picks up the rest of its budget if that pointer wanders off
+   without finding the notch. And once the notch has genuinely been hovered
+   or tabbed to, it is finished for the visit: the visitor knows. */
+const tease = document.getElementById("tease");
+const macEl = document.getElementById("mac");
+/* About three passes of the glide. Long enough to be caught out of the
+   corner of an eye, short enough that a visitor reading the page below it is
+   not sharing the screen with a loop that never ends. */
+let teaseLeft = 11000, teaseSince = 0, teaseT = null;
+let teaseDone = false, teaseOnScreen = false, teasePointerIn = false;
+
+function teaseRun() {
+  if (teaseDone || teaseT || teaseLeft <= 0) return;
+  if (!teaseOnScreen || teasePointerIn || narrowQ.matches || notch.classList.contains("open")) return;
+  tease.classList.toggle("still", calmQ.matches);
+  tease.classList.add("on");
+  notch.classList.add("hint");
+  teaseSince = performance.now();
+  teaseT = setTimeout(teaseStop, teaseLeft);
+}
+/* Off screen, with whatever is left of the budget banked. */
+function teasePark() {
+  if (teaseT) { clearTimeout(teaseT); teaseT = null; teaseLeft -= performance.now() - teaseSince; }
+  tease.classList.remove("on");
+  notch.classList.remove("hint");
+}
+function teaseStop() { teasePark(); teaseDone = true; }
+
+/* NARROW rather than the live query, and deliberately: a device that loaded
+   narrow is running the self-playing demo with the panel already open, and
+   nothing about turning it sideways makes an invitation to hover useful. The
+   opposite rotation is covered — teaseRun() re-reads narrowQ every time. */
+if (tease && macEl && !NARROW && typeof IntersectionObserver === "function") {
+  new IntersectionObserver((entries) => {
+    teaseOnScreen = entries[0].isIntersecting;
+    /* Not immediately on arrival: a mock that starts waving the instant it
+       clears the fold interrupts the scroll that brought it there. */
+    if (teaseOnScreen) setTimeout(teaseRun, 1200); else teasePark();
+  }, { threshold: .4 }).observe(macEl);
+
+  macEl.addEventListener("mouseenter", () => { teasePointerIn = true; teasePark(); });
+  macEl.addEventListener("mouseleave", () => { teasePointerIn = false; teaseRun(); });
+  notch.addEventListener("mouseenter", teaseStop);
+  notchToggle.addEventListener("focus", teaseStop);
+}
+
+/* ── the demo plays itself on a phone ────────────────────────────────────
+   A visitor who has to discover the demo by tapping mostly won't, and motion
+   in the hero is what earns the scroll. So White is played by the same
+   one-ply picker the dino uses until the first touch, which hands the game
+   over mid-position rather than restarting it. */
+let demoT;
+function demoStep() {
+  if (over || !turn) return;
+  const m = dinoMove(true);
+  if (!m) return;
+  playWhite(m.i, m.j);
+  /* 2400ms, comfortably clear of playWhite's own 620ms reply timer. Nine full
+     moves in, the game starts again rather than grinding into an endgame the
+     one-ply picker cannot finish. */
+  demoT = setTimeout(() => {
+    if (hist.length > 18 || over) { newGame(); demoT = setTimeout(demoStep, 1400); }
+    else demoStep();
+  }, 2400);
+}
+/* Started by startDemo() at the very bottom of this script, after newGame() has
+   put a board in `bd`. Running it from here instead threw on the reduced-motion
+   path — dinoMove against an undefined board — and took the rest of the script
+   down with it, including newGame itself. */
+function startDemo() {
+  if (!NARROW) return;
+  setOpen(true);
+  /* `click`, not `pointerdown`: a scroll swipe that begins with a thumb on the
+     board fires pointerdown and would kill the demo before it was seen. The
+     browser suppresses click when the gesture turned into a scroll. */
+  boardEl.addEventListener("click", () => {
+    clearTimeout(demoT);
+    statusEl.setAttribute("aria-live", "polite");
+  }, { once: true });
+
+  if (calmQ.matches) {
+    /* No animation budget: fast-forward to a position that looks like a game
+       and stop, rather than leaving an untouched opening on screen. */
+    for (let n = 0; n < 8 && !over; n++) {
+      const m = dinoMove(turn); if (!m) break;
+      hist.push(san(bd, m.i, m.j)); bd = apply(bd, m.i, m.j); lastMove = [m.i, m.j];
+      turn = !turn;
+    }
+    draw();
+    return;
+  }
+  /* Silent until the visitor takes over. A game that plays itself would
+     otherwise queue about twenty-five "Thinking… / Your move." announcements a
+     minute at a screen reader, which is the page shouting at somebody who has
+     not asked it anything. */
+  statusEl.setAttribute("aria-live", "off");
+  demoT = setTimeout(demoStep, 1400);
+}
+
+/* ── send this to my Mac ─────────────────────────────────────────────────
+   The one thing a phone visitor can usefully do with a Mac app. All three
+   paths are local: the share sheet, the clipboard, and a mailto: the OS
+   hands to a mail client. Nothing here reaches the network. */
+const canSend = !!(navigator.share || (navigator.clipboard && navigator.clipboard.writeText));
+const MAILTO = "mailto:?subject=Dyno%20Chess&body=";
+function sendToMac(btn) {
+  const url = location.href.split("#")[0];
+  const what = btn.closest(".bar")?.querySelector(".what");
+  /* The original labels are captured once, at bind time. Reading them inside
+     done() meant a second press within the three seconds captured "Link
+     copied" as the label to restore, and the button never came back. */
+  const restore = () => {
+    btn.textContent = btn.dataset.label;
+    if (what) what.textContent = what.dataset.label;
+  };
+  const done = (label) => {
+    clearTimeout(+btn.dataset.t || 0);
+    btn.textContent = label;
+    if (what) what.textContent = "Now open it on your Mac.";
+    btn.dataset.t = String(setTimeout(restore, 3000));
+  };
+
+  if (navigator.share) {
+    navigator.share({ title: "Dyno Chess", text: "Chess that lives in your MacBook's notch.", url })
+      /* AbortError is the visitor closing the sheet, which needs no answer.
+         Anything else means the sheet could not open, and then they are owed
+         the clipboard rather than silence. */
+      .catch((err) => { if (err && err.name !== "AbortError") copy(url, done); });
+    return;
+  }
+  copy(url, done);
+}
+function copy(url, done) {
+  /* navigator.clipboard is undefined on an insecure origin — which the live
+     https site never is, but a local file:// test always is. */
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url)
+      .then(() => done("Link copied"))
+      .catch(() => { location.href = MAILTO + encodeURIComponent(url); });
+    return;
+  }
+  location.href = MAILTO + encodeURIComponent(url);
+}
+for (const id of ["sendMac", "barBtn"]) {
+  const el = document.getElementById(id);
+  if (!el) continue;
+  el.dataset.label = el.textContent;
+  const what = el.closest(".bar")?.querySelector(".what");
+  if (what) what.dataset.label = what.textContent;
+  el.addEventListener("click", (e) => { e.preventDefault(); sendToMac(el); });
+}
+
+/* The bar arrives once the visitor has decided to keep reading, so the hero
+   keeps its own call to action. It is only ever armed on a device that can
+   actually share or copy. */
+const bar = document.getElementById("bar");
+if (canSend) {
+  bar.classList.add("armed");
+  addEventListener("scroll", () => bar.classList.toggle("on", scrollY > 400), { passive: true });
+}
 
 const clockEl = document.getElementById("clock");
 function tick() {
@@ -836,6 +1660,7 @@ const nav = document.getElementById("nav");
 addEventListener("scroll", () => nav.classList.toggle("is-stuck", scrollY > 8), { passive: true });
 
 newGame();
+startDemo();
 </script>
 
 <!-- ── checkout ──────────────────────────────────────────────────────────
@@ -887,7 +1712,7 @@ const CHECKOUT_SUCCESS_URL = "https://dynochess.bixxter.com/thanks.html";
 
 (function openShop() {
   if (SELLER === "polar") polarShop();
-  else loadPaddle();
+  else paddleShop();
 })();
 
 /* Polar's checkout is a page, not an overlay, so this is a link and no
@@ -914,20 +1739,84 @@ function polarShop() {
   buy.replaceWith(link);
 }
 
-/* Paddle.js is fetched only once the shop is actually configured — same
-   reasoning as above. */
-function loadPaddle() {
+/* The Paddle shop, in two halves: a real button now, and the script only on
+   the click.
+ *
+ * Two things were wrong with fetching paddle.js at parse time. It made the
+ * page contradict the claim it is sold on — "no network access" in the hero,
+ * and again in the FAQ — for every visitor, in order to serve the few who
+ * scroll 7,000px to the price. And `s.onload = shop` has no failure path:
+ * cdn.paddle.com is on the common blocklists, so for anyone running an ad
+ * blocker the button never appeared at all and a live product read "Coming
+ * soon". Loading on the click fixes both, because a click is also the moment
+ * a failure can be reported to somebody who is looking at it. */
+function paddleShop() {
   const buy = document.getElementById("buy");
   if (!buy || !PADDLE_CLIENT_TOKEN || !PADDLE_PRICE_ID) return;
-  const s = document.createElement("script");
-  s.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
-  s.onload = shop;              // CDN blocked or offline: "Coming soon" stands
-  document.head.appendChild(s);
+
+  /* A real <button> rather than a clickable <span>: focusable and reachable
+     from the keyboard for free. With JS off the "Coming soon" placeholder
+     stands, which is still the honest state — nothing can open without it. */
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn";
+  btn.id = "buy";
+  btn.textContent = "Buy Pro";
+  const chip = document.createElement("span");
+  chip.className = "chip";
+  chip.textContent = "$14.99";
+  btn.appendChild(chip);
+  buy.replaceWith(btn);
+
+  let state = "cold";           // cold → loading → ready | blocked
+  btn.addEventListener("click", () => {
+    if (state === "ready") { checkout(); return; }
+    if (state === "loading") return;
+    if (state === "blocked") { fallback(); return; }
+
+    state = "loading";
+    btn.textContent = "Opening…";
+    btn.appendChild(chip);
+
+    const s = document.createElement("script");
+    s.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
+    s.onload = () => {
+      /* A 200 that is not Paddle.js — a captive portal, a filtering proxy, a
+         DNS-level blocker that serves a stub — fires onload, not onerror. If
+         the global is missing or throws, this is the blocked case wearing a
+         success code, and latching to "ready" first would leave every later
+         click throwing into the console. */
+      try {
+        if (typeof Paddle === "undefined") throw new Error("paddle.js loaded but Paddle is undefined");
+        initPaddle(chip);
+        state = "ready";
+        btn.firstChild.textContent = "Buy Pro";
+        checkout();
+      } catch {
+        state = "blocked";
+        fallback();
+      }
+    };
+    /* A blocked CDN is the common case, not the exotic one, and it deserves
+       an answer rather than a button that quietly stops working. */
+    s.onerror = () => { state = "blocked"; fallback(); };
+    document.head.appendChild(s);
+  });
+
+  function fallback() {
+    const a = document.createElement("a");
+    a.className = "btn";
+    a.id = "buy";
+    a.href = "mailto:dyno@bixxter.com?subject=" +
+             encodeURIComponent("Dyno Chess Pro — checkout link") +
+             "&body=" + encodeURIComponent(
+               "The checkout on the site is blocked here (cdn.paddle.com). Could you send me a link?");
+    a.textContent = "Email me a checkout link";
+    btn.replaceWith(a);
+  }
 }
 
-function shop() {
-  const buy = document.getElementById("buy");
-
+function initPaddle(chip) {
   /* A `test_` token belongs to the sandbox account, and Paddle.js has to be
      told so explicitly — otherwise it talks to live and every id 404s. */
   if (PADDLE_CLIENT_TOKEN.startsWith("test_")) Paddle.Environment.set("sandbox");
@@ -944,37 +1833,28 @@ function shop() {
     },
   });
 
-  /* Swap the placeholder span for a real button rather than making the span
-     clickable: this way it is focusable and reachable from the keyboard for
-     free, and with JS off the page still reads "Coming soon" instead of
-     offering a button that cannot open. */
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "btn";
-  btn.id = "buy";
-  btn.textContent = "Buy Pro";
-  const chip = document.createElement("span");
-  chip.className = "chip";
-  chip.textContent = "$14.99";
-  btn.appendChild(chip);
-  buy.replaceWith(btn);
-
-  btn.addEventListener("click", () => {
-    Paddle.Checkout.open({ items: [{ priceId: PADDLE_PRICE_ID, quantity: 1 }] });
-  });
-
   /* Show the price the visitor will actually be charged — Paddle prices in
      their currency and adds their VAT, so a flat "$14.99" is a surprise at
-     the checkout for most of the world. Failure is silent: the hardcoded
-     price stays, which is wrong for some visitors but never blank. */
+     the checkout for most of the world. All three places that print it are
+     updated together: the card, the buy chip and the hero's ghost button.
+     Leaving the hero at $14.99 while the card said €17,99 was the version of
+     this bug that shipped. Failure is silent: the hardcoded price stays,
+     which is wrong for some visitors but never blank. */
   Paddle.PricePreview({ items: [{ priceId: PADDLE_PRICE_ID, quantity: 1 }] })
     .then((preview) => {
-      const line = preview?.data?.details?.lineItems?.[0];
-      const total = line?.formattedTotals?.total;
-      const el = document.getElementById("proPrice");
-      if (total && el) { el.textContent = total; chip.textContent = total; }
+      const total = preview?.data?.details?.lineItems?.[0]?.formattedTotals?.total;
+      if (!total) return;
+      for (const id of ["proPrice", "proChip"]) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = total;
+      }
+      if (chip) chip.textContent = total;
     })
     .catch(() => {});
+}
+
+function checkout() {
+  Paddle.Checkout.open({ items: [{ priceId: PADDLE_PRICE_ID, quantity: 1 }] });
 }
 </script>
 </body>

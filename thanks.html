@@ -2,12 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Thank you — Dyno Chess</title>
-<meta name="description" content="Your Dyno Chess Pro licence key is on its way by email.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- This is the tab a buyer stares at three seconds after handing over money.
+     "Thank you" does not confirm that anything happened; this does, and it
+     matches the h1 further down. -->
+<title>Payment received — Dyno Chess Pro</title>
+<meta name="description" content="Your Dyno Chess Pro licence key is on its way by email. Here is how to activate it.">
 <!-- Nothing to index: this page only exists for people who just paid, and a
-     "payment received" page in search results is confusing at best. -->
+     "payment received" page in search results is confusing at best.
+     No canonical either, on purpose: a canonical on a noindex page is a
+     contradictory pair of signals for no gain. -->
 <meta name="robots" content="noindex, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dyno Chess">
+<meta property="og:url" content="https://dynochess.bixxter.com/thanks.html">
+<meta property="og:title" content="Payment received — Dyno Chess Pro">
+<meta property="og:description" content="Your licence key is on its way to the email address you paid with.">
+<meta property="og:image" content="https://dynochess.bixxter.com/assets/social/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<!-- No manifest link here: a checkout confirmation is not an installable app. -->
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#fbf6ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17120e" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 <style>
 /* Same tokens as index.html. Duplicated rather than shared so each page
    stays a single self-contained file with no external requests. */
@@ -29,9 +49,16 @@ body {
 }
 a { color: inherit; }
 :focus-visible { outline: 2px solid #66b3ff; outline-offset: 3px; border-radius: 6px; }
-.wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.5rem; }
+/* padding-inline, not the `padding` shorthand: both elements that carry
+   .wrap also carry a later single-class rule with a `padding` shorthand in
+   it, and a shorthand resets the sides this is trying to set. Every one of
+   those is padding-block below for the same reason. */
+.wrap {
+  max-width: 46rem; margin: 0 auto;
+  padding-inline: max(1.5rem, env(safe-area-inset-left)) max(1.5rem, env(safe-area-inset-right));
+}
 .nav { border-bottom: 1px solid var(--line); }
-.nav-in { display: flex; align-items: center; gap: .75rem; padding: 1rem 0; }
+.nav-in { display: flex; align-items: center; gap: .75rem; padding-block: 1rem; }
 .brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; font-weight: 700; letter-spacing: -.02em; }
 .nav-sp { flex: 1; }
 .nav a.txt { text-decoration: none; color: var(--ink-soft); font-size: .95rem; }
@@ -52,7 +79,7 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
 .note p { margin: 0; }
 .note p + p { margin-top: .5rem; }
 .tick { display: inline-block; width: .8rem; height: .8rem; border-radius: 50%; background: var(--mark); margin-right: .5rem; }
-.legal { border-top: 1px solid var(--line); margin-top: 4rem; padding: 1.5rem 0 3rem; font-size: .82rem; color: var(--ink-faint); display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
+.legal { border-top: 1px solid var(--line); margin-top: 4rem; padding-block: 1.5rem 3rem; font-size: .82rem; color: var(--ink-faint); display: flex; flex-wrap: wrap; gap: .75rem 1rem; }
 .legal a { color: inherit; }
 </style>
 </head>

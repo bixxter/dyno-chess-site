@@ -2,10 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Privacy, Terms &amp; Refunds — Dyno Chess</title>
-<meta name="description" content="Privacy policy, terms of sale and refund policy for Dyno Chess.">
-<meta name="robots" content="index, follow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy, terms &amp; refunds — Dyno Chess</title>
+<!-- This is the page a cautious buyer and a payment reviewer both open, so the
+     snippet names the refund window, the seller and the merchant of record
+     before they click. -->
+<meta name="description" content="Privacy policy, terms of sale and the 14-day refund policy for Dyno Chess, the Mac notch chess app. Sold by Asatulla Dadabaev through Paddle.">
+<link rel="canonical" href="https://dynochess.bixxter.com/legal.html">
+<meta name="robots" content="index, follow, max-snippet:-1">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dyno Chess">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://dynochess.bixxter.com/legal.html">
+<meta property="og:title" content="Privacy, terms &amp; refunds — Dyno Chess">
+<meta property="og:description" content="The app ships without the network entitlement, so it cannot collect anything. Refunds are 14 days, no reason needed.">
+<meta property="og:image" content="https://dynochess.bixxter.com/assets/social/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://dynochess.bixxter.com/assets/social/og.png">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#fbf6ee" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17120e" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
 <style>
 /* Same tokens as index.html. Duplicated rather than shared so each page
    stays a single self-contained file with no external requests. */
@@ -27,9 +50,16 @@ body {
 }
 a { color: inherit; }
 :focus-visible { outline: 2px solid #66b3ff; outline-offset: 3px; border-radius: 6px; }
-.wrap { max-width: 46rem; margin: 0 auto; padding: 0 1.5rem; }
+/* padding-inline, not the `padding` shorthand: both elements that carry
+   .wrap also carry a later single-class rule with a `padding` shorthand in
+   it, and a shorthand resets the sides this is trying to set. Every one of
+   those is padding-block below for the same reason. */
+.wrap {
+  max-width: 46rem; margin: 0 auto;
+  padding-inline: max(1.5rem, env(safe-area-inset-left)) max(1.5rem, env(safe-area-inset-right));
+}
 .nav { border-bottom: 1px solid var(--line); }
-.nav-in { display: flex; align-items: center; gap: .75rem; padding: 1rem 0; }
+.nav-in { display: flex; align-items: center; gap: .75rem; padding-block: 1rem; }
 .brand { display: flex; align-items: center; gap: .6rem; text-decoration: none; font-weight: 700; letter-spacing: -.02em; }
 .brand svg { width: 30px; height: 30px; border-radius: 9px; background: var(--ink); padding: 4px; }
 .nav-sp { flex: 1; }
@@ -57,7 +87,7 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
 }
 .summary p { margin: 0; }
 .summary p + p { margin-top: .5rem; }
-.legal { border-top: 1px solid var(--line); margin-top: 4rem; padding: 1.5rem 0 3rem; font-size: .82rem; color: var(--ink-faint); display: flex; flex-wrap: wrap; gap: .3rem 1rem; }
+.legal { border-top: 1px solid var(--line); margin-top: 4rem; padding-block: 1.5rem 3rem; font-size: .82rem; color: var(--ink-faint); display: flex; flex-wrap: wrap; gap: .75rem 1rem; }
 .legal a { color: inherit; }
 </style>
 </head>

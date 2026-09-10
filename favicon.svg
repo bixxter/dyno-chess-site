@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 11" shape-rendering="crispEdges" role="img" aria-label="Dyno Chess">
+  <!-- The same 11x10 grid as MascotArt.swift, the landing page's inline dino and
+       Tools/social/kit.mjs. Full bleed but for half a cell of headroom, because a
+       favicon that keeps the app icon's generous padding is a green smudge at
+       16 pixels. Dark tile in both colour schemes: a browser tab strip is dark
+       as often as it is light, and the mascot is a light-on-dark character. -->
+  <rect width="11" height="11" rx="2.4" fill="#17120e"/>
+  <g transform="translate(0 .5)" fill="#66e680">
+    <rect x="7" y="0" width="3" height="1"/>
+    <rect x="7" y="1" width="1" height="1"/><rect x="9" y="1" width="2" height="1"/>
+    <rect x="7" y="2" width="4" height="1"/>
+    <rect x="0" y="3" width="1" height="1"/><rect x="4" y="3" width="5" height="1"/>
+    <rect x="0" y="4" width="2" height="1"/><rect x="3" y="4" width="5" height="1"/>
+    <rect x="1" y="5" width="6" height="1"/>
+    <rect x="2" y="6" width="5" height="1"/>
+    <rect x="3" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/>
+    <rect x="4" y="7" width="2" height="1" opacity=".55"/>
+    <rect x="3" y="8" width="1" height="1"/><rect x="6" y="8" width="1" height="1"/>
+    <rect x="3" y="9" width="2" height="1"/><rect x="6" y="9" width="2" height="1"/>
+  </g>
+  <rect x="8" y="1.5" width="1" height="1" fill="#fff"/>
+</svg>

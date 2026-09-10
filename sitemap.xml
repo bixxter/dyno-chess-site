@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Two URLs. thanks.html is left out because it is noindex, and listing a
+     page you have asked not to be indexed is a contradiction a crawler
+     resolves by trusting neither signal.
+
+     No <changefreq> and no <priority>: Google ignores both, and leaving them
+     out is two fewer numbers to keep truthful. <lastmod> it does read, so it
+     has to be maintained — a stale one is worse than none, because the field
+     then gets ignored for the whole site. legal.html's date here must match
+     the "Last updated" line in that file. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://dynochess.bixxter.com/</loc>
+    <lastmod>2026-09-11</lastmod>
+  </url>
+  <url>
+    <loc>https://dynochess.bixxter.com/legal.html</loc>
+    <lastmod>2026-09-09</lastmod>
+  </url>
+</urlset>

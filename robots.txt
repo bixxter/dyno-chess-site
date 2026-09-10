@@ -1,0 +1,16 @@
+# https://dynochess.bixxter.com/
+# Three hand-written pages. There is nothing here to hide.
+#
+# thanks.html is NOT disallowed, deliberately. It carries its own
+# <meta name="robots" content="noindex, follow">, and a crawler has to be
+# allowed to fetch the page in order to read that tag. Blocking it here would
+# leave a URL Google knows about, cannot look at, and therefore cannot drop.
+#
+# No GPTBot / ClaudeBot / PerplexityBot block either. For an app whose buyers
+# ask an assistant "is there a chess game for the MacBook notch", being
+# quotable is the same thing as ranking.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://dynochess.bixxter.com/sitemap.xml
