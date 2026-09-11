@@ -98,7 +98,8 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
 
   <h2>Activating it</h2>
   <p>Don't have the app yet?
-    <a href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">Download it for Mac</a>
+    <a href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg"
+       data-umami-event="download" data-umami-event-from="thanks">Download it for Mac</a>
     first — the key activates a copy already on the Mac, and it will wait as long as you need.</p>
   <ol class="steps">
     <li>Open Dyno Chess and press <code>⌘,</code> for Settings.</li>
@@ -126,8 +127,28 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   <a href="legal.html#privacy">Privacy</a>
   <a href="legal.html#terms">Terms</a>
   <a href="legal.html#refunds">Refunds</a>
-  <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a>
+  <a href="mailto:dyno@bixxter.com" data-umami-event="email" data-umami-event-from="thanks">dyno@bixxter.com</a>
 </div>
+
+<!-- ── analytics ─────────────────────────────────────────────────────────
+     The id is the one from index.html and has to match it exactly; the long
+     explanation of why lives there, next to the constant. The short version
+     is that this is the only page a visitor reaches by paying, so a pageview
+     here is a sale — and an id filled in on index.html but not on this file
+     measures the whole funnel except the part that pays for it. -->
+<script>
+"use strict";
+const UMAMI_WEBSITE_ID = "f2cd3e05-c2b3-4ee1-90f8-a4497d2a5860";
+const UMAMI_SRC = "https://cloud.umami.is/script.js";
+if (UMAMI_WEBSITE_ID) {
+  const s = document.createElement("script");
+  s.src = UMAMI_SRC;
+  s.dataset.websiteId = UMAMI_WEBSITE_ID;
+  s.dataset.domains = "dynochess.bixxter.com";
+  s.dataset.doNotTrack = "true";
+  document.head.appendChild(s);
+}
+</script>
 
 <script>
 "use strict";

@@ -26,8 +26,8 @@
      or the page gets cached under two identities.
 
      The image is fetched by the unfurling service's crawler, never by the
-     visitor's browser — nothing on this page references it — so the promise
-     that the page makes no outbound request until Buy is clicked still holds.
+     visitor's browser — nothing on this page references it — so this costs a
+     visitor nothing and appears in no measurement.
      Regenerate it with `node Tools/social/render.mjs og`. If the artwork ever
      changes materially, ship it under a NEW filename: Slack, Facebook,
      Telegram and iMessage all cache the bitmap by URL and there is no way to
@@ -769,7 +769,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
           "name": "Does it need an internet connection?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No, and it cannot use one. The app ships without the network entitlement at all, so this is verifiable rather than a promise: run codesign -d --entitlements :- \"Dyno Chess.app\" and look for yourself. There is no account, no sign-in and no analytics."
+            "text": "No, and it cannot use one. The app ships without the network entitlement at all, so this is verifiable rather than a promise: run codesign -d --entitlements :- \"Dyno Chess.app\" and look for yourself. There is no account, no sign-in and no analytics. This website is a separate thing and does count its visitors, without cookies and without any way to identify you; the privacy policy lists exactly what it records."
           }
         },
         {
@@ -888,12 +888,14 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <a class="brand" href="#top"><span id="brandIcon"></span><span>Dyno Chess</span></a>
   <!-- A real link: it is bordered and underline-free, so it looked like one
        whatever it was, and the thing it should open is one click away anyway. -->
-  <a class="pill" href="https://github.com/bixxter/dyno-chess-releases/releases">v0.6.0</a>
+  <a class="pill" href="https://github.com/bixxter/dyno-chess-releases/releases"
+     data-umami-event="releases" data-umami-event-from="nav-pill">v0.6.0</a>
   <span class="nav-sp"></span>
   <a class="txt" href="#agents">Agents</a>
   <a class="txt" href="#price">Pricing</a>
   <a class="txt" href="#faq">FAQ</a>
-  <a class="btn" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">Download</a>
+  <a class="btn" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg"
+     data-umami-event="download" data-umami-event-from="nav">Download</a>
 </div></nav>
 
 <main>
@@ -905,12 +907,14 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
          iOS Safari will happily spend the visitor's cellular allowance pulling
          down a disk image the device cannot mount. Under 700px the narrow
          sibling replaces it and moves the link to the Mac instead. -->
-    <a class="btn only-wide" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">Download for Mac <span class="chip">Free</span></a>
+    <a class="btn only-wide" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg"
+       data-umami-event="download" data-umami-event-from="hero">Download for Mac <span class="chip">Free</span></a>
     <!-- An <a> to the download section rather than a <button>: with JavaScript
          off it still goes somewhere useful, and with JavaScript on the handler
          cancels the jump and opens the share sheet instead. -->
     <a class="btn only-narrow" href="#download" id="sendMac">Send this to my Mac</a>
-    <a class="btn btn-ghost" href="#price">See what Pro costs <span class="chip" id="proChip">$14.99</span></a>
+    <a class="btn btn-ghost" href="#price"
+       data-umami-event="price-jump">See what Pro costs <span class="chip" id="proChip">$14.99</span></a>
   </div>
   <ul class="facts">
     <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>No network access</li><li>Works with Claude Code</li>
@@ -1129,7 +1133,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     <p>Because it ships Stockfish, and Stockfish is licensed under the GPLv3, which is widely held to be incompatible with the App Store's terms. Downloading it here is the honest option rather than a worse one: the build is signed with a Developer ID and notarized by Apple, so Gatekeeper is satisfied, and updates come straight from this page.</p></details>
 
   <details><summary>Does it need an internet connection?</summary>
-    <p>No, and it cannot use one. The app ships without the network entitlement at all, so this is verifiable rather than a promise — run <code>codesign -d --entitlements :- "Dyno Chess.app"</code> and look for yourself. There is no account, no sign-in and no analytics.</p></details>
+    <p>No, and it cannot use one. The app ships without the network entitlement at all, so this is verifiable rather than a promise — run <code>codesign -d --entitlements :- "Dyno Chess.app"</code> and look for yourself. There is no account, no sign-in and no analytics. This website is a separate thing and does count its visitors — without cookies and without any way to identify you; the <a href="legal.html#privacy">privacy policy</a> lists exactly what it records.</p></details>
 
   <details><summary>What happens when the trial ends?</summary>
     <p>Nothing breaks. You get 14 days of Pro when you first launch it, and after that the app quietly becomes the free version. The board, the island and all nine opponents keep working forever. You will never find your chess game held hostage.</p></details>
@@ -1138,10 +1142,10 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     <p>Three. The licence is a signed file checked on your Mac, so activating does not require the internet either.</p></details>
 
   <details><summary>Can I get a refund?</summary>
-    <p>Yes, within 14 days, no reason required. Email <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a> and it gets refunded in full — you don't have to explain yourself. The <a href="legal.html#refunds">refund policy</a> spells out the details.</p></details>
+    <p>Yes, within 14 days, no reason required. Email <a href="mailto:dyno@bixxter.com" data-umami-event="email" data-umami-event-from="faq-refund">dyno@bixxter.com</a> and it gets refunded in full — you don't have to explain yourself. The <a href="legal.html#refunds">refund policy</a> spells out the details.</p></details>
 
   <details><summary>Who am I buying from, and how do I get help?</summary>
-    <p>Dyno Chess is made and sold by Asatulla Dadabaev — one person, not a company. Support, refunds and lost licence keys all go to <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a>, and it's read by a person. The <a href="legal.html#privacy">privacy policy</a> and <a href="legal.html#terms">terms of sale</a> are on one page.</p></details>
+    <p>Dyno Chess is made and sold by Asatulla Dadabaev — one person, not a company. Support, refunds and lost licence keys all go to <a href="mailto:dyno@bixxter.com" data-umami-event="email" data-umami-event-from="faq-support">dyno@bixxter.com</a>, and it's read by a person. The <a href="legal.html#privacy">privacy policy</a> and <a href="legal.html#terms">terms of sale</a> are on one page.</p></details>
 
   <details><summary>Which engine is it, and is the source available?</summary>
     <p>Stockfish, running as a separate process over UCI, exactly as its licence intends. The full GPLv3 text ships inside the disk image alongside a link to the exact source revision the bundled binary was built from.</p></details>
@@ -1174,14 +1178,18 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 
 <footer class="foot wrap" id="download">
   <div class="cta-row" style="margin-bottom:1rem">
-    <a class="btn only-wide" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">Download for Mac <span class="chip">Free</span></a>
-    <a class="btn only-narrow" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg">The .dmg, if you're on a Mac</a>
-    <a class="btn btn-ghost" href="https://github.com/bixxter/dyno-chess-releases/releases">All versions</a>
+    <a class="btn only-wide" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg"
+       data-umami-event="download" data-umami-event-from="footer">Download for Mac <span class="chip">Free</span></a>
+    <a class="btn only-narrow" href="https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg"
+       data-umami-event="download" data-umami-event-from="footer-narrow">The .dmg, if you're on a Mac</a>
+    <a class="btn btn-ghost" href="https://github.com/bixxter/dyno-chess-releases/releases"
+       data-umami-event="releases" data-umami-event-from="footer">All versions</a>
   </div>
   <p class="quiet" style="margin:0;font-size:.9rem;max-width:46ch">
     macOS 14 or later, Apple silicon and Intel. Signed with a Developer ID and
     notarized by Apple, so it opens without a warning; every release lists its
-    SHA-256. Something wrong? <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a>.
+    SHA-256. Something wrong? <a href="mailto:dyno@bixxter.com"
+    data-umami-event="email" data-umami-event-from="footer">dyno@bixxter.com</a>.
   </p>
   <p class="wordmark" aria-hidden="true">Dyno Chess</p>
 </footer>
@@ -1190,7 +1198,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <a href="legal.html#privacy">Privacy</a>
   <a href="legal.html#terms">Terms</a>
   <a href="legal.html#refunds">Refunds</a>
-  <a href="mailto:dyno@bixxter.com">dyno@bixxter.com</a>
+  <a href="mailto:dyno@bixxter.com" data-umami-event="email" data-umami-event-from="legal-bar">dyno@bixxter.com</a>
   <span>Stockfish is GPLv3 and ships with its licence.</span>
   <span>Claude and Claude Code are trademarks of Anthropic PBC. Dyno Chess is independent and not affiliated with Anthropic.</span>
 </div>
@@ -1202,6 +1210,76 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <span class="what">Mac app · macOS 14+</span>
   <button class="btn" type="button" id="barBtn">Send to my Mac</button>
 </div>
+
+<!-- ── analytics ─────────────────────────────────────────────────────────
+     Umami Cloud, and it goes first in the script order so that `track` exists
+     before anything below can want it.
+
+     Why this one and not the obvious one. Every page on this site argues that
+     the product does not watch you, and an analytics tag that sets a cookie,
+     builds a cross-site profile and needs a consent banner would be the page
+     contradicting itself above the fold — a visitor who opens devtools to
+     check the `codesign` claim is exactly the visitor who looks. Umami sets
+     nothing on the device, stores no IP and cannot follow anyone to another
+     site, so the paragraph in legal.html that describes it is still a
+     paragraph we are happy to have read.
+
+     What it is here to answer, in order: how many people arrive and from
+     where, how many get as far as the price, how many press Buy, and how many
+     reach thanks.html. Everything else below is a cheaper version of a
+     question that would otherwise be guesswork — whether anyone plays the
+     board, whether anyone works out that the notch opens, which question in
+     the FAQ people actually open before they buy. -->
+<script>
+"use strict";
+
+/* Umami > Settings > Websites > Dyno Chess > Edit > Website ID.
+   Empty is the off switch, and the shipped default: with no id nothing is
+   injected, no third-party request is made, and every `track` call below is a
+   no-op. The page behaves exactly as it did before analytics existed.
+
+   THREE FILES CARRY THIS ID — index.html, legal.html, thanks.html — and they
+   have to agree. thanks.html is the only page that records a sale, so an id
+   missing there reports a funnel with no bottom; legal.html is where the
+   visitor is told any of this happens, so an id missing there is just a page
+   that quietly does not measure the one thing it is for.
+
+   Filling it in also switches on a paragraph: the "This website" section of
+   legal.html names Umami and says what is collected. That text and this
+   constant ship together, or the privacy policy describes a different site. */
+const UMAMI_WEBSITE_ID = "f2cd3e05-c2b3-4ee1-90f8-a4497d2a5860";
+
+/* One host for both Umami Cloud regions, checked rather than assumed: this
+   account is pinned to Europe, and eu.umami.is answers 301 to exactly this
+   URL and serves a byte-identical script. Picking a region decides where the
+   data is stored, not where the tag points. Change this only if the
+   dashboard's own install snippet ever stops saying it. */
+const UMAMI_SRC = "https://cloud.umami.is/script.js";
+
+/* Three things this has to survive, all with the same answer: no id, the
+   script blocked by a content blocker — Umami is on the common lists, so this
+   is the ordinary case rather than the exotic one — and an event fired before
+   the script has finished loading. Measurement that throws inside a click
+   handler breaks the click, and the click is the entire point of the page. */
+function track(name, data) {
+  try { window.umami && window.umami.track(name, data); } catch {}
+}
+
+(function loadAnalytics() {
+  if (!UMAMI_WEBSITE_ID) return;
+  const s = document.createElement("script");
+  s.src = UMAMI_SRC;
+  s.dataset.websiteId = UMAMI_WEBSITE_ID;
+  /* Without this every `open Web/index.html` on this machine, and every fork
+     of the repo, reports into the same dashboard as the live site — and the
+     numbers you would be reading are mostly your own. */
+  s.dataset.domains = "dynochess.bixxter.com";
+  /* Costs a few percent of the totals. It is also the only setting here that
+     the page's own argument obliges us to take. */
+  s.dataset.doNotTrack = "true";
+  document.head.appendChild(s);
+})();
+</script>
 
 <script>
 "use strict";
@@ -1422,10 +1500,17 @@ function playWhite(from, to) {
     cLabel.textContent = "YOUR TURN";
   }, 620);
 }
+/* Once per visit, and from the click handler rather than from playWhite:
+   demoStep() calls playWhite too, so measuring inside it would count the
+   demo playing to an empty room as somebody trying the board. */
+let playedOnce = false;
 boardEl.addEventListener("click", e => {
   const cell = e.target.closest(".sq"); if (!cell || over || !turn) return;
   const i = +cell.dataset.i;
-  if (sel !== null && legal(bd, sel).includes(i)) { playWhite(sel, i); return; }
+  if (sel !== null && legal(bd, sel).includes(i)) {
+    if (!playedOnce) { playedOnce = true; track("demo-move"); }
+    playWhite(sel, i); return;
+  }
   sel = own(bd[i], true) && legal(bd, i).length ? i : null;
   draw();
 });
@@ -1464,9 +1549,20 @@ function setOpen(v) {
   if (!v && !notch.contains(document.activeElement)) return;
   if (!v) notchToggle.focus();
 }
+/* Not inside setOpen: startDemo() opens the panel itself on a phone, and that
+   is the page opening it, not the visitor. Measured at the two call sites a
+   person can reach instead, which is also what makes `via` worth reading —
+   0.6 added a line of copy pointing at the notch because nobody was hovering
+   it, and `via=hover` against `via=click` is whether that line worked. */
+let openedOnce = false;
+function trackOpen(via) {
+  if (openedOnce) return;
+  openedOnce = true;
+  track("notch-open", { via });
+}
 notch.addEventListener("mouseenter", () => {
   if (narrowQ.matches) return;
-  clearTimeout(closeT); openT = setTimeout(() => setOpen(true), 250);
+  clearTimeout(closeT); openT = setTimeout(() => { trackOpen("hover"); setOpen(true); }, 250);
 });
 notch.addEventListener("mouseleave", () => {
   if (narrowQ.matches) return;
@@ -1478,7 +1574,7 @@ notch.addEventListener("mouseleave", () => {
 addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !narrowQ.matches && notch.classList.contains("open")) setOpen(false);
 });
-notchToggle.addEventListener("click", () => { clearTimeout(openT); setOpen(true); });
+notchToggle.addEventListener("click", () => { clearTimeout(openT); trackOpen("click"); setOpen(true); });
 
 /* ── the hover invitation ────────────────────────────────────────────────
    Feedback from the site: people did not work out that the mock is playable.
@@ -1611,6 +1707,7 @@ function sendToMac(btn) {
   };
 
   if (navigator.share) {
+    track("send-to-mac", { how: "share" });
     navigator.share({ title: "Dyno Chess", text: "Chess that lives in your MacBook's notch.", url })
       /* AbortError is the visitor closing the sheet, which needs no answer.
          Anything else means the sheet could not open, and then they are owed
@@ -1618,6 +1715,7 @@ function sendToMac(btn) {
       .catch((err) => { if (err && err.name !== "AbortError") copy(url, done); });
     return;
   }
+  track("send-to-mac", { how: "copy" });
   copy(url, done);
 }
 function copy(url, done) {
@@ -1658,6 +1756,36 @@ tick(); setInterval(tick, 10000);
 
 const nav = document.getElementById("nav");
 addEventListener("scroll", () => nav.classList.toggle("is-stuck", scrollY > 8), { passive: true });
+
+/* ── the two measurements that are not a click ───────────────────────────
+   The price sits about 7,000px down. Downloads divided by visitors is
+   therefore a ratio with the wrong denominator — most people never see the
+   thing they failed to buy — and this is the missing middle of that sum. */
+const priceEl = document.getElementById("price");
+if (priceEl && typeof IntersectionObserver === "function") {
+  const io = new IntersectionObserver((entries) => {
+    if (!entries.some((e) => e.isIntersecting)) return;
+    /* Disconnect first: a slow scroll past the boundary fires this several
+       times, and "how many people got here" is a question about people. */
+    io.disconnect();
+    track("price-view");
+  });
+  io.observe(priceEl);
+}
+
+/* Which question somebody opens on the way to the price is the closest this
+   page gets to hearing an objection out loud. Recorded once per question per
+   visit — toggling one open and shut twice is one person, still wondering. */
+const askedAbout = new Set();
+for (const d of document.querySelectorAll("#faq details")) {
+  d.addEventListener("toggle", () => {
+    if (!d.open) return;
+    const q = (d.querySelector("summary")?.textContent || "").trim().slice(0, 60);
+    if (!q || askedAbout.has(q)) return;
+    askedAbout.add(q);
+    track("faq", { q });
+  });
+}
 
 newGame();
 startDemo();
@@ -1716,9 +1844,10 @@ const CHECKOUT_SUCCESS_URL = "https://dynochess.bixxter.com/thanks.html";
 })();
 
 /* Polar's checkout is a page, not an overlay, so this is a link and no
-   third-party script is loaded at all — the page still makes no outbound
-   request until the visitor decides to buy, which is both the claim the
-   product is sold on and one less thing to explain in the privacy policy.
+   payment script is loaded at all — nothing reaches a merchant until the
+   visitor has decided to buy, which is one less thing to explain in the
+   privacy policy. (The analytics tag is the page's one standing outbound
+   request, and it is named in that policy; this is not.)
    An <a href> is focusable and works from the keyboard for free, and with JS
    off the page reads "Coming soon" rather than offering a dead button. */
 function polarShop() {
@@ -1730,6 +1859,13 @@ function polarShop() {
   link.id = "buy";
   link.href = POLAR_CHECKOUT_URL;
   link.textContent = "Buy Pro";
+  /* The attribute rather than a track() call in a click handler, because this
+     one navigates away: Umami's own handler holds the navigation until the
+     event has been sent, and a hand-rolled listener would race the unload and
+     lose the click it was there to count. The element exists before the
+     tracker initialises, which is what makes the attribute work at all. */
+  link.dataset.umamiEvent = "buy";
+  link.dataset.umamiEventSeller = "polar";
   const chip = document.createElement("span");
   chip.className = "chip";
   /* Stays $14.99: Polar has no client-side price preview, and it charges in
@@ -1742,10 +1878,12 @@ function polarShop() {
 /* The Paddle shop, in two halves: a real button now, and the script only on
    the click.
  *
- * Two things were wrong with fetching paddle.js at parse time. It made the
- * page contradict the claim it is sold on — "no network access" in the hero,
- * and again in the FAQ — for every visitor, in order to serve the few who
- * scroll 7,000px to the price. And `s.onload = shop` has no failure path:
+ * Two things were wrong with fetching paddle.js at parse time. It put a
+ * payment processor's script — a heavy one, on a domain the blocklists know —
+ * into every visit, in order to serve the few who scroll 7,000px to the
+ * price. (The analytics tag, 2KB and named in the privacy policy, is a
+ * different trade and is loaded up front; a checkout is not.) And
+ * `s.onload = shop` has no failure path:
  * cdn.paddle.com is on the common blocklists, so for anyone running an ad
  * blocker the button never appeared at all and a live product read "Coming
  * soon". Loading on the click fixes both, because a click is also the moment
@@ -1770,6 +1908,12 @@ function paddleShop() {
 
   let state = "cold";           // cold → loading → ready | blocked
   btn.addEventListener("click", () => {
+    /* Every press except the ones that land on a button already busy loading,
+       which do nothing and are not a decision. Deliberately not deduplicated:
+       opening the overlay, closing it and pressing again is a real second
+       thought, and the gap between this and `checkout` is where the price
+       preview or the VAT line is doing something worth knowing about. */
+    if (state !== "loading") track("buy", { seller: "paddle" });
     if (state === "ready") { checkout(); return; }
     if (state === "loading") return;
     if (state === "blocked") { fallback(); return; }
@@ -1794,12 +1938,21 @@ function paddleShop() {
         checkout();
       } catch {
         state = "blocked";
+        track("checkout", { state: "blocked", why: "stub" });
         fallback();
       }
     };
     /* A blocked CDN is the common case, not the exotic one, and it deserves
        an answer rather than a button that quietly stops working. */
-    s.onerror = () => { state = "blocked"; fallback(); };
+    s.onerror = () => {
+      state = "blocked";
+      /* The number this whole integration was missing. The blocked path was
+         written blind, on the assumption that ad blockers eat cdn.paddle.com
+         often enough to be worth a mailto fallback; `blocked` against `open`
+         is the first time that assumption is checkable rather than argued. */
+      track("checkout", { state: "blocked", why: "network" });
+      fallback();
+    };
     document.head.appendChild(s);
   });
 
@@ -1854,6 +2007,7 @@ function initPaddle(chip) {
 }
 
 function checkout() {
+  track("checkout", { state: "open" });
   Paddle.Checkout.open({ items: [{ priceId: PADDLE_PRICE_ID, quantity: 1 }] });
 }
 </script>

@@ -101,7 +101,7 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
 
 <main class="wrap">
   <h1>Privacy, terms &amp; refunds</h1>
-  <p class="updated">Last updated 9 September 2026</p>
+  <p class="updated">Last updated 11 September 2026</p>
 
   <ul class="toc">
     <li><a href="#privacy">Privacy policy</a></li>
@@ -119,6 +119,9 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
     forgotten when the session ends.</p>
     <p>Buying is the only part that involves anyone else, because someone has to take the
     payment. Refunds are 14 days, no reason needed.</p>
+    <p>This website is a different thing from the app, and it does count its visitors — no
+    cookies, no way to identify you, and it is spelled out in full
+    <a href="#privacy">below</a>.</p>
   </div>
 
   <h2 id="privacy">Privacy policy</h2>
@@ -172,12 +175,39 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   no visibility into your account.</p>
 
   <h3>This website</h3>
-  <p>This site is a static page hosted on <b>GitHub Pages</b>. We set no cookies, run no
-  analytics and load nothing from third parties. GitHub records standard server logs,
-  including your IP address, in the course of serving the page; that processing is
-  governed by the
+  <p>This site is a static page hosted on <b>GitHub Pages</b>. GitHub records standard
+  server logs, including your IP address, in the course of serving the page; that
+  processing is governed by the
   <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub
   Privacy Statement</a>. We do not have access to those logs.</p>
+
+  <p>The page also counts its visitors, using <b>Umami</b>. This is the one part of Dyno
+  Chess where "it cannot collect anything" does not apply, so here is the whole of it. It
+  records which page you are on, the site or search that sent you here, your country, and
+  your browser, operating system, device type and screen size.</p>
+
+  <p>It also records a fixed list of named actions, and this is all of them: following a
+  link to the download or to the release notes, reaching the pricing section, pressing Buy
+  and whether the checkout then opened, opening a question in the FAQ and which one,
+  playing a move on the chess board in the header, opening the notch mock, using "Send this
+  to my Mac", and clicking one of our email addresses. Nothing else. No keystrokes, no
+  mouse movements, no session replay, and nothing you type anywhere on the site.</p>
+
+  <p>What it does not do: <b>no cookies</b>, and nothing else written to or read from your
+  device. No advertising or marketing tags. No tracking across other websites. And no way
+  to work out who you are — your IP address is used to derive your country and an anonymous
+  visitor identifier that cannot be turned back into an address, and is not stored by us or
+  by Umami. We do not sell, rent or share any of it. Umami's own handling of the data is
+  governed by the <a href="https://umami.is/privacy">Umami Privacy Policy</a>.</p>
+
+  <p>Our basis for this is our legitimate interest in knowing which parts of the site work
+  (GDPR Article 6(1)(f)). Because nothing is stored on or read from your device, the rule
+  that puts a cookie banner in front of you does not apply here — and if your browser sends
+  <b>Do Not Track</b>, the script does nothing at all.</p>
+
+  <p>None of this is in the app. Dyno Chess itself still ships without the network
+  entitlement and still cannot send anything anywhere; that claim is about the software you
+  install, and <code>codesign</code> still proves it.</p>
 
   <h3>Buying a licence</h3>
   <p>Payments are processed by <b>Paddle.com Market Ltd</b>, which acts as the merchant of
@@ -200,6 +230,10 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   will act within 30 days. Deleting your purchase record means we can no longer re-issue a
   lost licence key, so keep a copy first. For data held by Paddle, contact Paddle
   directly.</p>
+  <p>You can also object to the website analytics described above. There is nothing to
+  unsubscribe from, because there is no record with your name on it to find — switching on
+  Do Not Track, or blocking <code>cloud.umami.is</code>, stops the page counting you, and
+  nothing on the site behaves any differently when you do.</p>
 
   <h2 id="terms">Terms of sale</h2>
   <p>These terms apply when you buy a Dyno Chess Pro licence. The seller is <b>Asatulla
@@ -313,6 +347,27 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   <span>Stockfish is GPLv3 and ships with its licence.</span>
   <span>Claude and Claude Code are trademarks of Anthropic PBC.</span>
 </div>
+
+<!-- ── analytics ─────────────────────────────────────────────────────────
+     The id is the one from index.html and has to match it exactly; the long
+     explanation of why lives there, next to the constant. This page in
+     particular should not be the one that quietly opts out, because the
+     "This website" section above is where a visitor is told this happens at
+     all — measuring every page except the one that makes the disclosure is a
+     bad look on a site sold on being checkable. -->
+<script>
+"use strict";
+const UMAMI_WEBSITE_ID = "f2cd3e05-c2b3-4ee1-90f8-a4497d2a5860";
+const UMAMI_SRC = "https://cloud.umami.is/script.js";
+if (UMAMI_WEBSITE_ID) {
+  const s = document.createElement("script");
+  s.src = UMAMI_SRC;
+  s.dataset.websiteId = UMAMI_WEBSITE_ID;
+  s.dataset.domains = "dynochess.bixxter.com";
+  s.dataset.doNotTrack = "true";
+  document.head.appendChild(s);
+}
+</script>
 
 <script>
 "use strict";
