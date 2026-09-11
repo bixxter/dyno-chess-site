@@ -425,6 +425,30 @@ mark::after {
   font-size: .88rem; color: var(--ink-faint); max-width: 74ch;
 }
 
+/* ── the loop ────────────────────────────────────────────────────────────
+   A rendered 16:9 loop of the panel opening, an approval answered and a move
+   played. It is the one thing on this page the hero mock cannot show: the
+   hero is a real playable board but it has no agent strip, because the strip
+   needs sessions and this page has no network to get them from.
+
+   16:9 and not the 16/10 the .mac mock uses. The file is 16:9, and a
+   container that disagrees with its video letterboxes inside its own border
+   radius — two black bars with rounded corners, which looks like a bug.
+
+   `preload="none"` is the whole performance story: the element costs a poster
+   until the visitor scrolls to it. The script swaps in autoplay and starts it
+   on intersection, and takes the controls away at the same time. Without
+   JavaScript the controls stay and it is an ordinary video anybody can press
+   play on, which is the same bargain the demo board makes one section up. */
+.reel { margin: 2.5rem 0 0; }
+.reel video {
+  display: block; width: 100%; aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  background: #14161a;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,.06);
+}
+
 /* ── features ────────────────────────────────────────────────────────── */
 .sec { padding-block: 6rem; }
 /* The three section headings used to carry this as a duplicated inline style. */
@@ -682,7 +706,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
       "applicationSubCategory": "Chess",
       "operatingSystem": "macOS 14.0 or later",
       "processorRequirements": "Apple silicon or Intel",
-      "softwareVersion": "0.7.0",
+      "softwareVersion": "0.7.1",
       "url": "https://dynochess.bixxter.com/",
       "downloadUrl": "https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg",
       "releaseNotes": "https://github.com/bixxter/dyno-chess-releases/releases",
@@ -889,7 +913,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <!-- A real link: it is bordered and underline-free, so it looked like one
        whatever it was, and the thing it should open is one click away anyway. -->
   <a class="pill" href="https://github.com/bixxter/dyno-chess-releases/releases"
-     data-umami-event="releases" data-umami-event-from="nav-pill">v0.7.0</a>
+     data-umami-event="releases" data-umami-event-from="nav-pill">v0.7.1</a>
   <span class="nav-sp"></span>
   <a class="txt" href="#agents">Agents</a>
   <a class="txt" href="#price">Pricing</a>
@@ -1014,6 +1038,23 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   </div>
   <p class="strip-cap">The strip as it draws under the board. Purple is blocked on you, amber is
     working, green has finished and is waiting.</p>
+
+  <!-- The strip above is a still, and a still cannot show the one thing that
+       matters: the purple row is gone a second after you answer it. The loop
+       can, and it is the only place on the page where the notch, the board and
+       the strip are all in one picture at once. Twelve seconds, silent,
+       rendered rather than captured — the same drawing the mock at the top of
+       the page is, from the same numbers. -->
+  <figure class="reel">
+    <video id="reelLoop" poster="assets/video/site-hero-poster.jpg"
+           muted loop playsinline controls preload="none"
+           aria-label="A MacBook notch opens into a chess panel. A purple row under the board is approved with one click, it turns amber, a knight moves, and the panel folds back into the notch.">
+      <source src="assets/video/site-hero.webm" type="video/webm">
+      <source src="assets/video/site-hero.mp4" type="video/mp4">
+    </video>
+    <figcaption class="strip-cap">Twelve seconds, on a loop, with no sound. Hover, answer the one
+      that is blocked, play a move, and it is a notch again.</figcaption>
+  </figure>
 
   <div class="grid3">
     <div>
@@ -1681,6 +1722,44 @@ function startDemo() {
      not asked it anything. */
   statusEl.setAttribute("aria-live", "off");
   demoT = setTimeout(demoStep, 1400);
+}
+
+/* ── the loop in #agents ─────────────────────────────────────────────────
+   The markup ships the video with `controls` and `preload="none"`, so with
+   JavaScript off it is an ordinary video that costs a poster and plays when
+   pressed. Here we upgrade it: no chrome, and it starts and stops with the
+   viewport.
+
+   Three reasons it stays a press-to-play video instead:
+
+     Reduced motion. A 12-second loop that never stops is exactly what that
+     setting is for, and `animation-duration: .001ms` in the stylesheet does
+     nothing to a <video>.
+
+     Save-Data, or a connection the browser calls 2g. 400 kB is cheap on a
+     desk and rude on a train.
+
+     No IntersectionObserver, in which case we cannot tell whether it is on
+     screen, and a video decoding six sections below the fold is worse than
+     one that waits to be asked.
+
+   Pausing on exit matters more than starting on entry: a looping video left
+   running in a background tab is a phone getting warm for nothing. */
+const reel = document.getElementById("reelLoop");
+const thrifty = (navigator.connection?.saveData === true) ||
+                /2g/.test(navigator.connection?.effectiveType || "");
+if (reel && !calmQ.matches && !thrifty && typeof IntersectionObserver === "function") {
+  reel.controls = false;
+  reel.preload = "auto";
+  new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      // play() rejects if the browser declines to autoplay — Low Power Mode
+      // does, and so does an iOS Safari that has not seen a gesture. Catch it
+      // and hand the controls back rather than leaving a dead poster.
+      if (e.isIntersecting) reel.play().catch(() => { reel.controls = true; });
+      else reel.pause();
+    }
+  }, { threshold: 0.25 }).observe(reel);
 }
 
 /* ── send this to my Mac ─────────────────────────────────────────────────
