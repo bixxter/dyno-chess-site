@@ -146,6 +146,19 @@ if (UMAMI_WEBSITE_ID) {
   s.dataset.websiteId = UMAMI_WEBSITE_ID;
   s.dataset.domains = "dynochess.bixxter.com";
   s.dataset.doNotTrack = "true";
+  /* A named event and not just this page's pageview, so that the funnel can
+     be three events of the same kind — buy, checkout, purchase — rather than
+     two events and a URL. The pageview still happens and still agrees with
+     it; this is the one a report can be built on without knowing that the
+     thank-you page is called thanks.html.
+   *
+   * Deliberately unconditional. Paddle sends nothing back on the success
+   * redirect that could prove this visitor paid — `_ptxn` is a parameter for
+   * opening a checkout, not for returning from one — so anyone who keeps the
+   * URL can count themselves. The honest version of this number is "arrived
+   * at the thank-you page", which is what it is called, and `checkout-paid`
+   * on the previous page is the one Paddle actually vouches for. */
+  s.onload = () => { try { window.umami && window.umami.track("purchase"); } catch {} };
   document.head.appendChild(s);
 }
 </script>

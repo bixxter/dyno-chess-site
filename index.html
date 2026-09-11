@@ -1938,7 +1938,10 @@ function paddleShop() {
         checkout();
       } catch {
         state = "blocked";
-        track("checkout", { state: "blocked", why: "stub" });
+        /* Its own event name rather than a property of `checkout`: a checkout
+           that never opened is not a step of the funnel, and counting it as
+           one would quietly inflate the only number here that matters. */
+        track("checkout-blocked", { why: "stub" });
         fallback();
       }
     };
@@ -1950,7 +1953,7 @@ function paddleShop() {
          written blind, on the assumption that ad blockers eat cdn.paddle.com
          often enough to be worth a mailto fallback; `blocked` against `open`
          is the first time that assumption is checkable rather than argued. */
-      track("checkout", { state: "blocked", why: "network" });
+      track("checkout-blocked", { why: "network" });
       fallback();
     };
     document.head.appendChild(s);
@@ -1977,6 +1980,7 @@ function initPaddle(chip) {
   const dark = matchMedia("(prefers-color-scheme: dark)").matches;
   Paddle.Initialize({
     token: PADDLE_CLIENT_TOKEN,
+    eventCallback: checkoutEvent,
     checkout: {
       settings: {
         displayMode: "overlay",
@@ -2007,8 +2011,42 @@ function initPaddle(chip) {
 }
 
 function checkout() {
-  track("checkout", { state: "open" });
+  track("checkout");
   Paddle.Checkout.open({ items: [{ priceId: PADDLE_PRICE_ID, quantity: 1 }] });
+}
+
+/* Paddle.js narrates the whole checkout, and three of its events are the only
+   honest answer this page can give to "did they buy?". Without them the
+   measurement stops at "the overlay opened" and everything after it is one
+   undifferentiated drop-off, where a declined card and a closed tab look
+   exactly alike — and those two want opposite fixes.
+ *
+ * The event payload carries the buyer's email, address and transaction id.
+ * None of it is passed on: only the fact that the event happened. That is
+ * what keeps the list in the privacy policy short enough to be true.
+ *
+ * The name is normalised because Paddle's own documentation spells the
+ * payment failure two ways — `checkout.payment.failed` in the events
+ * reference, `checkout.payment_failed` in the integration guide. Matching
+ * both costs one replace and removes the question of which is current. */
+let checkoutPaid = false;
+function checkoutEvent(e) {
+  const name = String((e && e.name) || "").replace(/_/g, ".");
+
+  if (name === "checkout.completed") {
+    checkoutPaid = true;
+    /* Not the last step of the funnel — thanks.html is, because that is the
+       page the buyer has to actually arrive at to be told where the key
+       went. This one says the money cleared even when the redirect doesn't
+       happen, and the gap between the two is people who paid and never saw
+       the instruction to check their spam folder. */
+    track("checkout-paid");
+    return;
+  }
+  if (name === "checkout.payment.failed") { track("checkout-failed"); return; }
+  /* A `closed` after a completed checkout is the overlay tidying itself up on
+     the way to successUrl, not somebody walking away. */
+  if (name === "checkout.closed" && !checkoutPaid) track("checkout-abandoned");
 }
 </script>
 </body>

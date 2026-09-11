@@ -187,11 +187,20 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   your browser, operating system, device type and screen size.</p>
 
   <p>It also records a fixed list of named actions, and this is all of them: following a
-  link to the download or to the release notes, reaching the pricing section, pressing Buy
-  and whether the checkout then opened, opening a question in the FAQ and which one,
-  playing a move on the chess board in the header, opening the notch mock, using "Send this
-  to my Mac", and clicking one of our email addresses. Nothing else. No keystrokes, no
-  mouse movements, no session replay, and nothing you type anywhere on the site.</p>
+  link to the download or to the release notes, reaching the pricing section, pressing Buy,
+  whether the checkout then opened or was blocked by your browser, whether the payment
+  succeeded, failed or was abandoned, arriving at the thank-you page, opening a question in
+  the FAQ and which one, playing a move on the chess board in the header, opening the notch
+  mock, using "Send this to my Mac", and clicking one of our email addresses. Nothing else.
+  No keystrokes, no mouse movements, no session replay, and nothing you type anywhere on
+  the site.</p>
+
+  <p>The checkout deserves its own sentence, because it is the one place where real
+  personal data is on screen. Paddle tells the page when a payment succeeds or fails, and
+  that message contains your email address, your billing address and a transaction number.
+  <b>None of it is passed to the analytics.</b> What gets recorded is that a payment
+  succeeded — not who made it, not for how much, not from where. The purchase itself is
+  handled by Paddle and is described under "Buying a licence" below.</p>
 
   <p>What it does not do: <b>no cookies</b>, and nothing else written to or read from your
   device. No advertising or marketing tags. No tracking across other websites. And no way
