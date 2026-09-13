@@ -3,6 +3,38 @@
     <channel>
         <title>Dyno Chess</title>
         <item>
+            <title>0.7.4</title>
+            <pubDate>Mon, 14 Sep 2026 02:50:19 +0500</pubDate>
+            <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
+            <sparkle:version>12</sparkle:version>
+            <sparkle:shortVersionString>0.7.4</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[The buttons under the board sit evenly again.
+
+## Hint stops holding a gap open
+
+The Hint button used to count: press it once and it read "Hint 1/3", again for
+"Hint 2/3", and so on round the three moves it offers. To keep Undo and Resign
+from sliding sideways as that caption grew, the row reserved room for the widest
+version of it from the moment the board opened — so before you pressed anything
+there was a gap in front of Undo about twice the size of the one after it.
+
+The count is gone and so is the reserved room. Every button now takes exactly
+the width of its own label, and the spacing between Hint, Undo and Resign is the
+same all the way across.
+
+Nothing about the hint itself changed. It still offers three candidate moves at
+the position you are in, still moves to the next one each time you press, still
+wraps round to the first after the third, and still never runs out while the
+position stands.
+]]></description>
+            <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.4/DynoChess.dmg" length="138191121" type="application/octet-stream" sparkle:edSignature="OJqyqniaYCpLPnD9MRr7tjj0SvUqCqlSQRUIdaynz1dBvQgBk5F8BAMyIP1wdGkUJ5ad3DCnJ2aJUo8aC/mKBg=="/>
+            <sparkle:deltas>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.4/DynoChess12-11.delta" sparkle:deltaFrom="11" length="502086" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="EAwB67PsNIRpZnaeP5hpGJF5MJCKMtQTMK+sj/1b3F/SwLcx6KWVwao7GEKjb8cJaR6Bvy+nBHSlLv8oVQbaBQ=="/>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.4/DynoChess12-10.delta" sparkle:deltaFrom="10" length="818274" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="6SKoNU5hmR7pJJtiKAIxi9N0A2Eyv8yf/ilPhzW387gmG3To8qn8oxtIli/nP2LsNPA04Hfb4vbLrng7buPuDQ=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>0.7.3</title>
             <pubDate>Mon, 14 Sep 2026 01:05:39 +0500</pubDate>
             <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
