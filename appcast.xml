@@ -3,6 +3,75 @@
     <channel>
         <title>Dyno Chess</title>
         <item>
+            <title>0.7.3</title>
+            <pubDate>Mon, 14 Sep 2026 01:05:39 +0500</pubDate>
+            <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
+            <sparkle:version>11</sparkle:version>
+            <sparkle:shortVersionString>0.7.3</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[The notch stops looking like it is recording you, and puzzle pieces move.
+
+## The light in the notch
+
+The small round lamp on the right side of the pill is gone. It sat in the shape,
+the size and very nearly the place of the Mac's own camera-in-use indicator, and
+enough people read it as "this app is watching you" that the shape had to go.
+
+In its place is a short capsule, and it is lit only when you are actually
+wanted: your move, a check or a finished game, or an agent waiting on an answer.
+When nothing needs you — idle, or while the engine is thinking — the right ear
+is simply empty. The mascot still tells the two apart: blue at rest, green once
+a game is on.
+
+Nothing about what the app can see changed here, because there was never
+anything to change. Dyno Chess carries no camera, microphone or network
+entitlement at all, and you can check that yourself in a second:
+
+`codesign -d --entitlements :- '/Applications/Dyno Chess.app'`
+
+## Puzzles play their moves
+
+Puzzle pieces used to change squares between two frames. The board would open
+with the opponent's move already made, and after a correct answer the reply
+simply appeared — which meant working out what had happened before you could
+start working out what to do about it.
+
+Both of those now travel across the board the way the engine's moves always have
+in a game: the piece lifts, crosses, and sets down, and a captured piece stays
+whole long enough to watch it go. Your own moves are not replayed back at you.
+
+If you have Reduce Motion switched on in System Settings, the board stays
+instant — as it should.
+
+## The panel opens in two beats
+
+Hovering the island used to play one chord: the notch sprang open while the
+panel faded in on the same spring, re-laying out the board at every width the
+spring passed through. What that looked like was the content squeezing itself
+into place from the right while the notch was still moving.
+
+Now the panel is laid out once at its final size and the notch grows to uncover
+it, so the shape opens and *then* the panel arrives. Closing is the mirror: the
+panel leaves first and the notch closes over the space.
+
+## The home screen says which game
+
+The result card above New Game used to read "Checkmate · Black wins" with no
+indication of which game it meant — awkward on a screen you also walk back to
+mid-session. It now carries a "LAST GAME" label and how long ago it finished,
+kept true on the minute rather than written once and left to rot.
+
+The stats beside it became three rings over one denominator, which shows the
+win/draw/loss split before you read a digit. No win rate is shown until
+something has actually been decided; an all-hot-seat history used to read as a
+losing streak that never happened.
+]]></description>
+            <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.3/DynoChess.dmg" length="138197053" type="application/octet-stream" sparkle:edSignature="t1QJ4m576aUZ7JSJJh0L8BBkGOZQ534sF6VWwSQ2MHsWTXnRmXWXAapcesPgTQ58jNvnq4WlbTMpG2ZpUHbSDQ=="/>
+            <sparkle:deltas>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.3/DynoChess11-10.delta" sparkle:deltaFrom="10" length="867102" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="8kSnzOShKoY9WVdlQePSa5EP9/oiBg0Kd1eTFV+OW7Q0ezrBsw1brMHerBvICznrEilir90TiJ+2mIgHugJfDg=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>0.7.2</title>
             <pubDate>Sat, 12 Sep 2026 21:15:53 +0500</pubDate>
             <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
