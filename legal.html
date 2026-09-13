@@ -15,7 +15,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:url" content="https://dynochess.bixxter.com/legal.html">
 <meta property="og:title" content="Privacy, terms &amp; refunds — Dyno Chess">
-<meta property="og:description" content="The app ships without the network entitlement, so it cannot collect anything. Refunds are 14 days, no reason needed.">
+<meta property="og:description" content="The app collects nothing about you — the one thing that leaves your Mac is a daily check for a new version. Refunds are 14 days, no reason needed.">
 <meta property="og:image" content="https://dynochess.bixxter.com/assets/social/og.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
@@ -101,7 +101,7 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
 
 <main class="wrap">
   <h1>Privacy, terms &amp; refunds</h1>
-  <p class="updated">Last updated 11 September 2026</p>
+  <p class="updated">Last updated 12 September 2026</p>
 
   <ul class="toc">
     <li><a href="#privacy">Privacy policy</a></li>
@@ -111,13 +111,16 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   </ul>
 
   <div class="summary">
-    <p><b>The short version.</b> The app cannot collect anything about you — it ships without
-    the network entitlement, so it has no way to send data anywhere. Everything it knows
-    lives on your Mac.</p>
+    <p><b>The short version.</b> The app collects nothing about you. The program you launch is
+    built without the network entitlement, so macOS itself stops it opening a connection, and
+    everything it knows lives on your Mac.</p>
     <p>That includes the Claude Code integration added in version 0.3: what your agent is doing
     is shown in the notch and goes nowhere else. It is read on your machine, held in memory and
     forgotten when the session ends.</p>
-    <p>Buying is the only part that involves anyone else, because someone has to take the
+    <p>One request does leave, and it is not about you: once a day the updater bundled inside
+    the app asks this site whether there is a newer version. No account, no machine profile, no
+    usage data — and there is a switch for it in Settings → Updates.</p>
+    <p>Buying is the other part that involves anyone else, because someone has to take the
     payment. Refunds are 14 days, no reason needed.</p>
     <p>This website is a different thing from the app, and it does count its visitors — no
     cookies, no way to identify you, and it is spelled out in full
@@ -130,7 +133,8 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   application, this website, and buying a licence.</p>
 
   <h3>The application collects nothing</h3>
-  <p>This is not a promise you have to take on faith. The app is built without the
+  <p>This is not a promise you have to take on faith. The app process — the program that draws
+  the notch, runs the engine and holds your games — is built without the
   <code>com.apple.security.network.client</code> entitlement, which means macOS itself
   prevents it from opening a network connection. You can verify this on your own machine
   before trusting a word of this page:</p>
@@ -140,11 +144,46 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   app's own container on your Mac. We never receive them and have no way to.</p>
   <p>Licence keys are verified by checking a cryptographic signature locally. Activating a
   licence does not contact us or anyone else.</p>
-  <p>The same command lists three permissions the app does hold, all of them local and all of
-  them for the Claude Code integration described next: read-write access to
+  <p>Since version 0.7.2 there is exactly one exception to all of this, and because the
+  paragraphs above are the reason anyone trusts this page we would rather name it than have
+  you find it: the app can now update itself, and the piece of it that does the asking runs
+  outside the app's sandbox and does reach the network. It sends nothing about you. It is
+  described in full under <a href="#updates">Checking for updates</a>, and it does not change
+  a word of the <code>codesign</code> output above.</p>
+  <p>The same command lists the permissions the app does hold, and none of them can move data
+  off your Mac. Most are for the Claude Code integration described below: read-write access to
   <code>~/.claude</code> and <code>~/.dynochess</code>, and permission to send Apple Events to
-  the terminal applications it can jump to. None of them can move data off your Mac; only the
-  network entitlement could, and it is not there.</p>
+  the terminal applications it can jump to. One is for the updater — the app is allowed to talk
+  to the two helper services Sparkle runs, which is how it hands the network work to something
+  else instead of doing it itself. Only the network entitlement could send anything anywhere,
+  and it is not there.</p>
+
+  <h3 id="updates">Checking for updates</h3>
+  <p>Dyno Chess is not sold through an app store, so from version 0.7.2 it updates itself,
+  using <b>Sparkle</b> — the updater behind a large part of the Mac software you already run.
+  The part of Sparkle that touches the network is a separate helper inside the app bundle,
+  running outside the sandbox the app itself lives in. That split is deliberate and it costs
+  us something to keep: it is the reason the app process can go on carrying no network
+  entitlement at all, and the reason the command above still prints what it printed before.</p>
+  <p><b>What it does.</b> Once a day, and whenever you press Check for Updates, the helper
+  asks <code>dynochess.bixxter.com</code> for <code>appcast.xml</code> — a small file that
+  lists the current version. If there is a newer one, the disk image comes from our releases
+  page on GitHub — which sees your IP address for the length of the download, exactly as it
+  would if you clicked the button on the front page — and nothing is installed until you
+  say so.</p>
+  <p><b>What it sends.</b> Nothing about you and nothing about your Mac. No account, no
+  licence key, no identifier, no usage data and no machine profile: Sparkle can attach a
+  hardware and operating-system profile to that request, and we do not switch it on. You can
+  check that yourself without our help — right-click the app, Show Package Contents, and open
+  <code>Contents/Info.plist</code>; the key that would enable it,
+  <code>SUEnableSystemProfiling</code>, is simply not there. What our server unavoidably sees
+  is what any web request carries: an IP address, and a User-Agent naming Sparkle and the
+  version you are running. It is the same trace as opening this page in a browser, and it
+  lands in the same GitHub Pages logs described under "This website" below.</p>
+  <p><b>Turning it off.</b> Settings → Updates, "Check for updates automatically". With that
+  switched off nothing is requested until you press the button yourself. Nothing else in the
+  app behaves differently either way — the board, the engine, the puzzles and the licence
+  check have never needed the network and still do not.</p>
 
   <h3>The Claude Code integration</h3>
   <p>Since version 0.3 Dyno Chess can show your <b>Claude Code</b> sessions in the island. This is
@@ -159,8 +198,9 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   conversation transcripts</b>, and it does not read your source code.</p>
   <p><b>Where it goes.</b> Nowhere. It is held in memory to draw a row in the notch, and it is
   dropped when the session ends or the app quits. It is not written to a log, not saved to disk,
-  and — the app having no network entitlement — cannot be transmitted at all. We never receive
-  any of it.</p>
+  and — the app process having no network entitlement — cannot be transmitted at all. The
+  update check described above carries none of it: it asks one question about version numbers
+  and nothing else. We never receive any of it.</p>
   <p><b>What it writes.</b> Only when you press Install: hook entries in
   <code>~/.claude/settings.json</code>, after a timestamped backup of that file, appended
   alongside your own entries rather than replacing them. Remove takes out only the entries we
@@ -179,12 +219,13 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   server logs, including your IP address, in the course of serving the page; that
   processing is governed by the
   <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub
-  Privacy Statement</a>. We do not have access to those logs.</p>
+  Privacy Statement</a>. We do not have access to those logs. The app's daily update check
+  asks this same host for one file, so it lands in the same logs and nowhere else.</p>
 
   <p>The page also counts its visitors, using <b>Umami</b>. This is the one part of Dyno
-  Chess where "it cannot collect anything" does not apply, so here is the whole of it. It
-  records which page you are on, the site or search that sent you here, your country, and
-  your browser, operating system, device type and screen size.</p>
+  Chess that measures anybody at all, so here is the whole of it. It records which page you
+  are on, the site or search that sent you here, your country, and your browser, operating
+  system, device type and screen size.</p>
 
   <p>It also records a fixed list of named actions, and this is all of them: following a
   link to the download or to the release notes, reaching the pricing section, pressing Buy,
@@ -214,9 +255,10 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   that puts a cookie banner in front of you does not apply here — and if your browser sends
   <b>Do Not Track</b>, the script does nothing at all.</p>
 
-  <p>None of this is in the app. Dyno Chess itself still ships without the network
-  entitlement and still cannot send anything anywhere; that claim is about the software you
-  install, and <code>codesign</code> still proves it.</p>
+  <p>None of this is in the app. No analytics of any kind ships inside Dyno Chess: the app
+  process still carries no network entitlement and still cannot send anything anywhere, and
+  <code>codesign</code> still proves it. The only request made from inside the bundle is the
+  once-a-day version check described above, which counts nothing and identifies nobody.</p>
 
   <h3>Buying a licence</h3>
   <p>Payments are processed by <b>Paddle.com Market Ltd</b>, which acts as the merchant of
@@ -242,7 +284,9 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   <p>You can also object to the website analytics described above. There is nothing to
   unsubscribe from, because there is no record with your name on it to find — switching on
   Do Not Track, or blocking <code>cloud.umami.is</code>, stops the page counting you, and
-  nothing on the site behaves any differently when you do.</p>
+  nothing on the site behaves any differently when you do. The update check has its own
+  switch, in Settings → Updates, and turning it off stops the app asking anything of
+  anyone.</p>
 
   <h2 id="terms">Terms of sale</h2>
   <p>These terms apply when you buy a Dyno Chess Pro licence. The seller is <b>Asatulla

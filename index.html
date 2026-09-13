@@ -12,7 +12,7 @@
      front of the tag is what gets weighted. 52 characters, inside the ~580px
      Google renders before it truncates. -->
 <title>Chess in your MacBook's notch — Dyno Chess for macOS</title>
-<meta name="description" content="A full chess game in your MacBook's notch. Hover, play a move, get back to work. It also shows your Claude Code sessions. macOS 14+, offline, no account.">
+<meta name="description" content="A full chess game in your MacBook's notch. Hover, play a move, get back to work. It also shows your Claude Code sessions. macOS 14+, plays offline, no account.">
 <link rel="canonical" href="https://dynochess.bixxter.com/">
 <meta name="author" content="Asatulla Dadabaev">
 <!-- max-image-preview:large is the switch that lets the card below be used at
@@ -706,7 +706,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
       "applicationSubCategory": "Chess",
       "operatingSystem": "macOS 14.0 or later",
       "processorRequirements": "Apple silicon or Intel",
-      "softwareVersion": "0.7.1",
+      "softwareVersion": "0.7.2",
       "url": "https://dynochess.bixxter.com/",
       "downloadUrl": "https://github.com/bixxter/dyno-chess-releases/releases/latest/download/DynoChess.dmg",
       "releaseNotes": "https://github.com/bixxter/dyno-chess-releases/releases",
@@ -714,7 +714,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
       "image": "https://dynochess.bixxter.com/assets/social/og.png",
       "inLanguage": "en",
       "isAccessibleForFree": true,
-      "description": "A full chess game that lives in a MacBook's notch. Hover the notch, play a move against one of nine opponents from 400 to full strength, and it gets out of the way again. It also shows your Claude Code sessions under the board and signals in the closed notch when an agent is waiting on you. Native macOS, no account, and no network entitlement at all.",
+      "description": "A full chess game that lives in a MacBook's notch. Hover the notch, play a move against one of nine opponents from 400 to full strength, and it gets out of the way again. It also shows your Claude Code sessions under the board and signals in the closed notch when an agent is waiting on you. Native macOS, no account, no telemetry, and no network entitlement on the app process.",
       "featureList": [
         "Nine opponents from 400 to full-strength Stockfish",
         "Weak levels that blunder the way people do",
@@ -728,7 +728,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
         "Claude Code sessions in a strip under the board",
         "Approve, Always allow or Reject an agent's permission request from the notch",
         "Works over full-screen apps, across Spaces, on every display",
-        "No account, no telemetry, no network entitlement"
+        "No account, no telemetry, and no network entitlement on the app process"
       ],
       "author": {
         "@id": "https://dynochess.bixxter.com/#asatulla"
@@ -785,7 +785,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
           "name": "Why isn't it on the Mac App Store?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Because it ships Stockfish, and Stockfish is licensed under the GPLv3, which is widely held to be incompatible with the App Store's terms. Downloading it here is the honest option rather than a worse one: the build is signed with a Developer ID and notarized by Apple, so Gatekeeper is satisfied, and updates come straight from this page."
+            "text": "Because it ships Stockfish, and Stockfish is licensed under the GPLv3, which is widely held to be incompatible with the App Store's terms. Downloading it here is the honest option rather than a worse one: the build is signed with a Developer ID and notarized by Apple, so Gatekeeper is satisfied, and updates arrive in the app itself, from this site, rather than through a store."
           }
         },
         {
@@ -793,7 +793,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
           "name": "Does it need an internet connection?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "No, and it cannot use one. The app ships without the network entitlement at all, so this is verifiable rather than a promise: run codesign -d --entitlements :- \"Dyno Chess.app\" and look for yourself. There is no account, no sign-in and no analytics. This website is a separate thing and does count its visitors, without cookies and without any way to identify you; the privacy policy lists exactly what it records."
+            "text": "Not to play. The board, the engine, all nine opponents, the puzzles and your licence all work with the Wi-Fi off, and always will. One thing does use the network: once a day the updater bundled inside the app asks this site whether there is a newer version, carrying no account, no machine profile and no usage data, and there is a switch in Settings, Updates that turns it off. The app process itself still ships without the network entitlement at all, so that much is verifiable rather than a promise: run codesign -d --entitlements :- \"Dyno Chess.app\" and look for yourself. There is no sign-in and no analytics. This website is a separate thing and does count its visitors, without cookies and without any way to identify you; the privacy policy lists exactly what it records, the update check included."
           }
         },
         {
@@ -865,7 +865,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
           "name": "You say it has no network access \u2014 but it can see my agent?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Both are true, and the second is why the first still holds. Claude Code runs the hook, the hook hands the event to the app over a local socket inside your own account (file permissions, a same-user check and a per-install secret) and no packet is involved, so the network entitlement is still absent and codesign still proves it. What did change in 0.3 is that the same output now lists read-write exceptions for ~/.claude and ~/.dynochess, and Apple Events for the terminals it can jump to. All of them are named in the privacy policy, and none of them can send anything anywhere."
+            "text": "Both are true, and the second is why the first still holds. Claude Code runs the hook, the hook hands the event to the app over a local socket inside your own account (file permissions, a same-user check and a per-install secret) and no packet is involved, so the app process still carries no network entitlement and codesign still proves it. What did change in 0.3 is that the same output now lists read-write exceptions for ~/.claude and ~/.dynochess, and Apple Events for the terminals it can jump to. All of them are named in the privacy policy, and none of them can send anything anywhere. The one piece of the download that does use the network is the updater helper, which ships in the bundle but runs outside the app itself, never sees a session, and asks about nothing but version numbers."
           }
         },
         {
@@ -913,7 +913,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <!-- A real link: it is bordered and underline-free, so it looked like one
        whatever it was, and the thing it should open is one click away anyway. -->
   <a class="pill" href="https://github.com/bixxter/dyno-chess-releases/releases"
-     data-umami-event="releases" data-umami-event-from="nav-pill">v0.7.1</a>
+     data-umami-event="releases" data-umami-event-from="nav-pill">v0.7.2</a>
   <span class="nav-sp"></span>
   <a class="txt" href="#agents">Agents</a>
   <a class="txt" href="#price">Pricing</a>
@@ -941,7 +941,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
        data-umami-event="price-jump">See what Pro costs <span class="chip" id="proChip">$14.99</span></a>
   </div>
   <ul class="facts">
-    <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>No network access</li><li>Works with Claude Code</li>
+    <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>Plays offline</li><li>Works with Claude Code</li>
   </ul>
   <p class="newline"><a href="#features"><b>New in 0.6</b> — every game you finish gets graded, and turns
     into a card you can paste straight into a chat &#8594;</a></p>
@@ -1082,9 +1082,10 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     only when you press Install, after a timestamped backup, alongside your own entries rather than
     over them; Remove takes out only ours. If Dyno Chess isn't running, or is quit mid-decision, the
     bridge does nothing at all and your agent behaves exactly as it would without it. Nothing about
-    a session leaves the Mac: the app still ships with no network entitlement, and the hook reaches
-    it over a local socket inside your own account. Dyno Chess is an independent product and is not
-    affiliated with Anthropic.</p>
+    a session leaves the Mac: the app process still ships with no network entitlement, and the hook
+    reaches it over a local socket inside your own account. The one thing in the bundle that does
+    use the network is the updater, and all it ever asks is whether there is a newer version. Dyno
+    Chess is an independent product and is not affiliated with Anthropic.</p>
 </section>
 
 <section class="sec wrap" id="features">
@@ -1104,7 +1105,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8.5" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3.5 19c.6-3 2.5-4.5 5-4.5s4.4 1.5 5 4.5M13 19c.5-2.6 2.2-4.1 4.4-4.1S21.4 16.4 22 19"/></svg>
       <h3>Two players,<br>one Mac</h3><p>Hot-seat mode. Pass the laptop across the table.</p></div>
     <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 3l7 3v6c0 4.2-2.8 7.5-7 9-4.2-1.5-7-4.8-7-9V6z"/><path d="M9.5 12.2l1.8 1.8 3.4-3.6"/></svg>
-      <h3>Never phones<br>home</h3><p>No account, no telemetry, no network entitlement. Check it with codesign yourself.</p></div>
+      <h3>Nothing to<br>phone home with</h3><p>No account, no telemetry, and no network entitlement on the app process — check it with codesign yourself. The only thing that leaves is the updater asking once a day whether there's a newer version.</p></div>
     <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>
       <h3>Every game<br>kept as PGN</h3><p>Export one game or your whole history as a plain text file, and import an archive from anywhere else. No lock-in, in either direction.</p></div>
     <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M7 21h10"/></svg>
@@ -1171,10 +1172,10 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <h2 class="sec-h2">Questions.</h2>
 
   <details><summary>Why isn't it on the Mac App Store?</summary>
-    <p>Because it ships Stockfish, and Stockfish is licensed under the GPLv3, which is widely held to be incompatible with the App Store's terms. Downloading it here is the honest option rather than a worse one: the build is signed with a Developer ID and notarized by Apple, so Gatekeeper is satisfied, and updates come straight from this page.</p></details>
+    <p>Because it ships Stockfish, and Stockfish is licensed under the GPLv3, which is widely held to be incompatible with the App Store's terms. Downloading it here is the honest option rather than a worse one: the build is signed with a Developer ID and notarized by Apple, so Gatekeeper is satisfied, and updates arrive in the app itself, from this site, rather than through a store.</p></details>
 
   <details><summary>Does it need an internet connection?</summary>
-    <p>No, and it cannot use one. The app ships without the network entitlement at all, so this is verifiable rather than a promise — run <code>codesign -d --entitlements :- "Dyno Chess.app"</code> and look for yourself. There is no account, no sign-in and no analytics. This website is a separate thing and does count its visitors — without cookies and without any way to identify you; the <a href="legal.html#privacy">privacy policy</a> lists exactly what it records.</p></details>
+    <p>Not to play. The board, the engine, all nine opponents, the puzzles and your licence all work with the Wi-Fi off, and always will. One thing does use the network: once a day the updater bundled inside the app asks this site whether there's a newer version — carrying no account, no machine profile and no usage data, and there's a switch in Settings → Updates that turns it off. The app process itself still ships without the network entitlement at all, so that much is verifiable rather than a promise — run <code>codesign -d --entitlements :- "Dyno Chess.app"</code> and look for yourself. There is no sign-in and no analytics. This website is a separate thing and does count its visitors — without cookies and without any way to identify you; the <a href="legal.html#privacy">privacy policy</a> lists exactly what it records, the update check included.</p></details>
 
   <details><summary>What happens when the trial ends?</summary>
     <p>Nothing breaks. You get 14 days of Pro when you first launch it, and after that the app quietly becomes the free version. The board, the island and all nine opponents keep working forever. You will never find your chess game held hostage.</p></details>
@@ -1201,7 +1202,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     <p>It is built so it cannot. The hook exits successfully on every path it has, including a crash, a missing binary or a bad argument, and a hook that returns no decision means Claude Code carries on through its normal permission flow. If Dyno Chess isn't running, or you quit it halfway through a decision, the tool call proceeds. Hooks go into <code>~/.claude/settings.json</code> only when you press Install in Settings → Agents, after a timestamped backup, appended next to your own entries rather than over them — and Remove takes out only the ones we added. If the app is deleted, the helper removes its own entries and gets out of the way.</p></details>
 
   <details><summary>You say it has no network access — but it can see my agent?</summary>
-    <p>Both are true, and the second is why the first still holds. Claude Code runs the hook, the hook hands the event to the app over a local socket inside your own account — file permissions, a same-user check and a per-install secret — and no packet is involved, so the network entitlement is still absent and <code>codesign</code> still proves it. What did change in 0.3 is that the same output now lists read-write exceptions for <code>~/.claude</code> and <code>~/.dynochess</code>, and Apple Events for the terminals it can jump to. All of them are named in the <a href="legal.html#privacy">privacy policy</a>, and none of them can send anything anywhere.</p></details>
+    <p>Both are true, and the second is why the first still holds. Claude Code runs the hook, the hook hands the event to the app over a local socket inside your own account — file permissions, a same-user check and a per-install secret — and no packet is involved, so the app process still carries no network entitlement and <code>codesign</code> still proves it. What did change in 0.3 is that the same output now lists read-write exceptions for <code>~/.claude</code> and <code>~/.dynochess</code>, and Apple Events for the terminals it can jump to. All of them are named in the <a href="legal.html#privacy">privacy policy</a>, and none of them can send anything anywhere. The one piece of the download that does use the network is the updater helper, which ships in the bundle but runs outside the app itself, never sees a session, and asks about nothing but version numbers.</p></details>
 
   <details><summary>Is this an Anthropic product?</summary>
     <p>No. Dyno Chess is made by one person and is not affiliated with, endorsed by or sponsored by Anthropic. Claude and Claude Code are Anthropic's trademarks, used here only to say what the app works with. The integration is built on Claude Code's published hook interface, which Anthropic can change at any time — if that happens we'll follow it, but the licence you're buying is a licence to a chess app.</p></details>
@@ -1229,7 +1230,10 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
   <p class="quiet" style="margin:0;font-size:.9rem;max-width:46ch">
     macOS 14 or later, Apple silicon and Intel. Signed with a Developer ID and
     notarized by Apple, so it opens without a warning; every release lists its
-    SHA-256. Something wrong? <a href="mailto:dyno@bixxter.com"
+    SHA-256. After that it updates itself, and it only ever moves you forward —
+    every <a href="https://github.com/bixxter/dyno-chess-releases/releases"
+    data-umami-event="releases" data-umami-event-from="footer-previous">previous
+    version</a> stays on the releases page. Something wrong? <a href="mailto:dyno@bixxter.com"
     data-umami-event="email" data-umami-event-from="footer">dyno@bixxter.com</a>.
   </p>
   <p class="wordmark" aria-hidden="true">Dyno Chess</p>

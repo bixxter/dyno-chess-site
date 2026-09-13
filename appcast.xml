@@ -1,0 +1,63 @@
+<?xml version="1.0" standalone="yes"?>
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Dyno Chess</title>
+        <item>
+            <title>0.7.2</title>
+            <pubDate>Sat, 12 Sep 2026 21:15:53 +0500</pubDate>
+            <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
+            <sparkle:version>10</sparkle:version>
+            <sparkle:shortVersionString>0.7.2</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[Dyno Chess can update itself now.
+
+## The update button
+
+Hover the notch, click the gear, and there is a new **Updates** tab. One button
+checks for a new version and installs it — no website, no disk image, nothing to
+drag onto anything. Your saved games, your licence key and your agent sessions
+all stay exactly where they are.
+
+It asks first, every time. Updates are never downloaded or installed on their
+own, and the daily check can be switched off in the same place.
+
+After this one, updates get small: the next one is a few hundred kilobytes
+rather than 135 MB, because only the parts that changed are sent.
+
+## What this means for the network
+
+The app itself still carries no network entitlement, which means macOS will not
+let it open a connection at all. You can check that yourself — it takes a
+second:
+
+`codesign -d --entitlements :- '/Applications/Dyno Chess.app'`
+
+The check is made by the updater helper bundled inside the app, which asks
+`dynochess.bixxter.com` once a day whether there is a newer build. No account,
+no machine profile, no usage data: that request says which version you are
+running, from your IP address, and nothing else. Chess, puzzles, the engine and
+the agent bridge have never needed the network and still do not.
+
+## Intel Macs
+
+This build runs on them. Earlier ones did not, despite being described as
+universal: the app was built for Apple silicon only, while everything bundled
+alongside it was built for both. If you have an Intel Mac and Dyno Chess would
+not open, that is why, and this is the version to try.
+
+## Also in this release
+
+- Saved games are no longer pruned when a licence stops covering the version you
+  are running. Pro features pause; the games stay.
+- The agent launcher in `~/.dynochess/bin` now updates along with the app
+  instead of keeping whatever version first installed it.
+- Stockfish's GPLv3 licence text now travels inside the app bundle rather than
+  only in the disk image, so it is still there after an update.
+
+If an update ever fails, nothing is lost — the version you have keeps working,
+and every build is still downloadable from dynochess.bixxter.com.
+]]></description>
+            <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.2/DynoChess.dmg" length="138126564" type="application/octet-stream" sparkle:edSignature="pyuoiloW23eYIexqvoBioKq81uACldasW83m6hZKDQ0phFg93VE8Xcohf7cUIjTDp+Y1+qzWpfcQ7UnmZICvAQ=="/>
+        </item>
+    </channel>
+</rss>
