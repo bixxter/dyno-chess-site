@@ -385,6 +385,22 @@ mark::after {
 }
 .h2-big { font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -.03em; margin: 0; font-weight: 800; line-height: 1.04; }
 .sec-lede { margin: 1.2rem 0 0; color: var(--ink-soft); max-width: 60ch; font-size: 1.05rem; }
+/* Zug in the closed pill. Everything here is the app's own geometry at 1.35x:
+   the ears are 80 of the pill's 360 points, the robot is 9x10 sprite pixels
+   inside one of them, and 3px each is the smallest that still reads as a face
+   on a page somebody is scrolling past. */
+.zugbar { margin-top: 2.75rem; display: flex; justify-content: center; }
+.zugpill {
+  width: min(486px, 100%); height: 51px; background: #000;
+  border-radius: 0 0 18px 18px; box-shadow: var(--shadow);
+  display: flex; align-items: center; justify-content: space-between;
+}
+/* Fixed ears with the camera hardware's space between them, exactly as the
+   pill is laid out on the machine — so the robot sits where it really sits
+   rather than wherever flexbox leaves it. */
+.zugear { flex: none; width: 108px; display: flex; justify-content: center; }
+.zugear span { display: block; }
+
 /* The strip as the app draws it: the same black panel, the same row radii and
    the same state colours as AgentPalette.swift, so the page is not selling a
    screenshot the app cannot produce. */
@@ -701,7 +717,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
         "Post-game accuracy and blunder review",
         "Every game exportable as PGN, and PGN import",
         "A shareable result card as one image",
-        "Claude Code sessions in a strip under the board",
+        "Claude Code and Codex sessions in a strip under the board",
         "Approve, Always allow or Reject an agent's permission request from the notch",
         "Works over full-screen apps, across Spaces, on every display",
         "No account, no telemetry, and no network entitlement on the app process"
@@ -825,7 +841,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
           "name": "What does the Claude Code integration actually do?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Three things. It shows your live sessions in a strip under the board: the project, what the session is doing and how long it has been at it. It signals in the closed notch when one of them is blocked on you or has finished, so you do not keep tabbing back to check. And clicking a row takes you to the terminal that session is running in: Terminal.app and iTerm2 land on the exact tab, everything else gets raised to the front. On Pro you can answer the permission prompt from the notch itself; on Free you get five approvals a day and then it asks in the terminal as usual. It uses Claude Code's documented hooks and nothing else: no screen reading, no accessibility API, no polling of your files."
+            "text": "Three things. It shows your live sessions in a strip under the board: the project, what the session is doing and how long it has been at it. When one of them is blocked on you a small robot appears in the closed notch and waves until you answer, so you do not keep tabbing back to check. And clicking a row takes you to the terminal that session is running in: Terminal.app and iTerm2 land on the exact tab, everything else gets raised to the front. On Pro you can answer the permission prompt from the notch itself; on Free you get five approvals a day and then it asks in the terminal as usual. It works with Claude Code and Codex, and uses each one's documented hooks and nothing else: no screen reading, no accessibility API, no polling of your files."
           }
         },
         {
@@ -917,10 +933,10 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
        data-umami-event="price-jump">See what Pro costs <span class="chip" id="proChip">$14.99</span></a>
   </div>
   <ul class="facts">
-    <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>Plays offline</li><li>Works with Claude Code</li>
+    <li>macOS 14+</li><li>Apple silicon &amp; Intel</li><li>No account</li><li>Plays offline</li><li>Claude Code &amp; Codex</li>
   </ul>
-  <p class="newline"><a href="#features"><b>New in 0.6</b> — every game you finish gets graded, and turns
-    into a card you can paste straight into a chat &#8594;</a></p>
+  <p class="newline"><a href="#agents"><b>New in 0.7</b> — a robot called Zug waves from the notch when
+    Claude Code needs an answer, and leaves the moment you give it &#8594;</a></p>
 </header>
 
 <section class="wrap stage">
@@ -984,67 +1000,72 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 </section>
 
 <section class="sec wrap" id="agents">
-  <p class="kicker">Claude Code</p>
+  <p class="kicker">Claude Code &amp; Codex</p>
   <h2 class="h2-big">You were already waiting.<br>Now the wait has a board.</h2>
-  <p class="sec-lede">You send Claude Code off to work and then sit there watching a terminal, in
-    case it asks something. Dyno Chess puts those sessions in a strip under the board — and when the
-    agent is blocked on you, the closed notch says so from across the desk. Same app, same licence,
-    no window to arrange.</p>
+  <p class="sec-lede">Claude Code and Codex go quiet for minutes at a time and you sit there in case
+    one of them asks something. Dyno Chess watches instead: a robot waves from the closed notch when
+    an agent is blocked on you, and the strip under the board says what the rest are doing.</p>
+
+  <!-- The closed pill, at the size it would be if your screen were 1.35x too
+       big: the mascot in one ear, the robot in the other, and the camera
+       hardware's own space between them. Drawn by script from the same grids
+       the app uses — see the ZUG block below. -->
+  <div class="zugbar">
+    <div class="zugpill" aria-hidden="true">
+      <span class="zugear"><span id="zugDino"></span></span>
+      <span class="zugear"><span id="zugBot"></span></span>
+    </div>
+  </div>
+  <p class="strip-cap">The closed notch while an agent waits on a yes. The robot is Zug — after
+    Zugzwang, the position that obliges you to move. He waves until you answer, then goes.</p>
 
   <div class="strip">
     <div class="arow attn">
       <span class="adot" style="background:#9e8cfa"></span>
+      <!-- The agent's name rides in front of the status exactly as the app puts
+           it there, and for the same reason: only when both are live and "which
+           of these is which" is a real question. See AgentSessionChip. -->
       <span class="anm">dyno-chess
-        <span class="asub">Needs approval · Bash · <code>swift test --package-path Packages/Island</code></span></span>
+        <span class="asub">Claude · Needs approval · Bash · <code>swift test --package-path Packages/Island</code></span></span>
       <span class="atime">0:28</span>
       <span class="abtns"><b class="abtn pri">Approve</b><b class="abtn">Always</b><b class="abtn neg">Reject</b><b class="abtn">Open &#8599;</b></span>
     </div>
     <div class="arow">
       <span class="adot" style="background:#fac259"></span>
-      <span class="anm">api-worker <span class="asub">Thinking…</span></span>
+      <span class="anm">api-worker <span class="asub">Codex · Thinking…</span></span>
       <span class="atime">4m</span>
       <span class="abtns"><b class="abtn">Open &#8599;</b></span>
     </div>
     <div class="arow">
       <span class="adot" style="background:#66e680"></span>
-      <span class="anm">landing-page <span class="asub">Your turn</span></span>
+      <span class="anm">landing-page <span class="asub">Claude · Your turn</span></span>
       <span class="atime">12m</span>
       <span class="abtns"><b class="abtn">Open &#8599;</b></span>
     </div>
   </div>
-  <p class="strip-cap">The strip as it draws under the board. Purple is blocked on you, amber is
-    working, green has finished and is waiting.</p>
+  <p class="strip-cap">Every session, both agents. Purple is blocked on you, amber is working, green
+    has finished.</p>
 
   <div class="grid3">
     <div>
-      <h3>It tells you, so you stop checking</h3>
-      <p>The closed notch carries the signal: an agent waiting on an answer looks different from an
-        agent that has finished, and both look different from a chess game you're losing. You get
-        the news without opening anything.</p>
+      <h3>Answer from the notch</h3>
+      <p><b>Approve</b>, <b>Always allow</b> or <b>Reject</b> without hunting for the terminal. Five
+        a day free, unlimited on Pro; past that the prompt falls through to the terminal as usual.</p>
     </div>
     <div>
       <h3>One click, the right tab</h3>
-      <p>Clicking a row raises the terminal that session is actually running in — Terminal.app and
-        iTerm2 land on the exact tab. Ghostty, WezTerm, kitty, Warp, VS Code and the rest get
-        brought to the front. Sessions over SSH are marked and never jumped.</p>
+      <p>Clicking a row raises the terminal that session runs in. Terminal.app and iTerm2 land on the
+        exact tab, the rest come to the front, and SSH sessions are marked and never jumped.</p>
     </div>
     <div>
-      <h3>Answer without leaving</h3>
-      <p>Pro turns the row into <b>Approve</b>, <b>Always allow</b> and <b>Reject</b>, so a
-        permission prompt costs you a click instead of a context switch. Free gets five approvals a
-        day; after that the request falls through to the terminal exactly as it does today.</p>
+      <h3>Nothing leaves the Mac</h3>
+      <p>Hooks are written only when you press Install, after a backup and alongside your own. The
+        app has no network entitlement; the hook reaches it over a socket in your own account.</p>
     </div>
   </div>
 
-  <p class="fineprint">Claude Code only in this release — Codex and Gemini CLI speak a near-identical
-    hook interface and are the obvious next ones, but nothing here is sold on a promise of them. The hooks are written into <code>~/.claude/settings.json</code>
-    only when you press Install, after a timestamped backup, alongside your own entries rather than
-    over them; Remove takes out only ours. If Dyno Chess isn't running, or is quit mid-decision, the
-    bridge does nothing at all and your agent behaves exactly as it would without it. Nothing about
-    a session leaves the Mac: the app process still ships with no network entitlement, and the hook
-    reaches it over a local socket inside your own account. The one thing in the bundle that does
-    use the network is the updater, and all it ever asks is whether there is a newer version. Dyno
-    Chess is an independent product and is not affiliated with Anthropic.</p>
+  <p class="fineprint">Quit Dyno Chess and both agents behave exactly as they would without it. It is
+    an independent product, not affiliated with Anthropic or OpenAI.</p>
 </section>
 
 <section class="sec wrap" id="features">
@@ -1074,7 +1095,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 18L14 8M14 8h-4M14 8v4"/><path d="M4 6h3M5.5 4.5v3"/><path d="M17 15h3M18.5 13.5v3"/></svg>
       <h3>Miss it, and it<br>tells you why</h3><p>A wrong move doesn't end the puzzle. It draws what the opponent does to you, then lets you try again.</p></div>
     <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9.5l3 2.5-3 2.5M12.5 15H17"/></svg>
-      <h3>Your agents,<br>under the board</h3><p>A live strip of Claude Code sessions: what each one is doing, how long it's been, and which one is waiting on you.</p></div>
+      <h3>Your agents,<br>under the board</h3><p>A live strip of Claude Code and Codex sessions: what each one is doing, how long it's been, and which one is waiting on you.</p></div>
     <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 12.5V17a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h8"/><path d="M8.5 11.5l3 3L21 5"/></svg>
       <h3>Approve from<br>the notch</h3><p>Answer a permission prompt without hunting for the terminal. Five a day free, unlimited on Pro.</p></div>
     <div class="feat"><svg class="ico" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 20V10M10 20V4M16 20v-7M22 20H3"/></svg>
@@ -1120,7 +1141,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
         <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Untimed play, hot-seat, unlimited undo</span></li>
         <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Live eval bar, your last five games</span></li>
         <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span>Three hints a day</span></li>
-        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Claude Code sessions in the island</b> — the strip, the signal in the notch, the jump back to the right tab, and five approvals a day</span></li>
+        <li><svg class="tick" aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3.5 3.5L13 5"/></svg><span><b>Claude Code and Codex sessions in the island</b> — the strip, Zug in the notch, the jump back to the right tab, and five approvals a day</span></li>
       </ul>
       <p class="anchor">Strength is never the paywall. The engine plays as hard as you ask, free.</p>
     </div>
@@ -1155,7 +1176,7 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     <p>It's the whole feature, not a sample: you get your real rating, the rank ladder, the day streak and the theme breakdown from the first puzzle, and the app picks each one to sit just above your level. Only the count is limited. Three is about a coffee break, which is what a notch-sized board is for — and if you want to sit down and grind fifty, that's what Pro removes. The puzzles themselves come from the Lichess database, which is public domain and free forever at the source; we'd rather be upfront that what you're paying for is the volume and the machinery, not the file.</p></details>
 
   <details><summary>What does the Claude Code integration actually do?</summary>
-    <p>Three things. It shows your live sessions in a strip under the board — the project, what the session is doing and how long it has been at it. It signals in the closed notch when one of them is blocked on you or has finished, so you don't keep tabbing back to check. And clicking a row takes you to the terminal that session is running in: Terminal.app and iTerm2 land on the exact tab, everything else gets raised to the front. On Pro you can answer the permission prompt from the notch itself; on Free you get five approvals a day and then it asks in the terminal as usual. It uses Claude Code's documented hooks and nothing else — no screen reading, no accessibility API, no polling of your files.</p></details>
+    <p>Three things. It shows your live sessions in a strip under the board — the project, what the session is doing and how long it has been at it. When one of them is blocked on you a small robot appears in the closed notch and waves until you answer, so you don't keep tabbing back to check. And clicking a row takes you to the terminal that session is running in: Terminal.app and iTerm2 land on the exact tab, everything else gets raised to the front. On Pro you can answer the permission prompt from the notch itself; on Free you get five approvals a day and then it asks in the terminal as usual. It works with Claude Code and Codex, and uses each one's documented hooks and nothing else — no screen reading, no accessibility API, no polling of your files.</p></details>
 
   <details><summary>Can it break my agent?</summary>
     <p>It is built so it cannot. The hook exits successfully on every path it has, including a crash, a missing binary or a bad argument, and a hook that returns no decision means Claude Code carries on through its normal permission flow. If Dyno Chess isn't running, or you quit it halfway through a decision, the tool call proceeds. Hooks go into <code>~/.claude/settings.json</code> only when you press Install in Settings → Agents, after a timestamped backup, appended next to your own entries rather than over them — and Remove takes out only the ones we added. If the app is deleted, the helper removes its own entries and gets out of the way.</p></details>
@@ -1789,6 +1810,89 @@ for (const d of document.querySelectorAll("#faq details")) {
     askedAbout.add(q);
     track("faq", { q });
   });
+}
+
+/* ── Zug ─────────────────────────────────────────────────────────────────
+   The same two 9x10 grids as AgentRobotArt.swift, drawn the same way the
+   dino above is: 1 = chassis, 2 = shadow, 3 = eye, 4 = antenna bulb,
+   5 = chest panel. Both poses share their middle five columns, so the wave
+   is two arms moving rather than a sprite hopping about inside the ear. */
+const ZUG_STAND = [
+  [0,0,0,0,4,0,0,0,0],
+  [0,0,0,0,2,0,0,0,0],
+  [0,0,1,1,1,1,1,0,0],
+  [0,0,1,3,1,3,1,0,0],
+  [0,0,1,1,1,1,1,0,0],
+  [0,0,0,2,2,2,0,0,0],
+  [0,1,1,1,1,1,1,1,0],
+  [1,0,1,5,5,5,1,0,1],
+  [1,0,1,1,1,1,1,0,1],
+  [0,0,1,1,0,1,1,0,0],
+];
+const ZUG_WAVE = [
+  [0,0,0,0,4,0,0,0,0],
+  [0,0,0,0,2,0,0,0,0],
+  [1,0,1,1,1,1,1,0,1],
+  [1,0,1,3,1,3,1,0,1],
+  [1,0,1,1,1,1,1,0,1],
+  [1,1,0,2,2,2,0,1,1],
+  [0,1,1,1,1,1,1,1,0],
+  [0,0,1,5,5,5,1,0,0],
+  [0,0,1,1,1,1,1,0,0],
+  [0,0,1,1,0,1,1,0,0],
+];
+/* AgentPalette.swift, written out: chassis, shadow, and the one lavender the
+   strip above already uses for a row that is blocked on you. There is no
+   second robot colour — Zug is only ever on screen while an agent waits. */
+const ZUG_CHASSIS = "#c7cfde", ZUG_SHADOW = "#5c6375", ZUG_TINT = "#9e8cfa";
+function zugSVG(art, bulbLit, px) {
+  let r = "";
+  for (let y = 0; y < art.length; y++) for (let x = 0; x < art[y].length; x++) {
+    const c = art[y][x]; if (!c) continue;
+    const fill = c === 1 ? ZUG_CHASSIS
+      : c === 2 ? ZUG_SHADOW
+      : c === 4 ? (bulbLit ? ZUG_TINT : ZUG_SHADOW)
+      : ZUG_TINT;
+    r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${fill}" opacity="${c === 5 ? ".55" : "1"}"/>`;
+  }
+  return `<svg viewBox="0 0 9 10" width="${9*px}" height="${10*px}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`;
+}
+
+const zugBot = document.getElementById("zugBot");
+if (zugBot) {
+  /* Blue, not green: the mascot folds an agent signal into its idle mood, so
+     an untouched board is what is actually beside the robot on the machine. */
+  document.getElementById("zugDino").innerHTML = dinoSVG(C.idle, 3);
+  let armsUp = false, waveT = 0;
+  function paintZug() {
+    /* The bulb blinks on the up-beat so the two read as one gesture. Held on
+       when nothing is waving: a dark bulb says "not running", which is the
+       opposite of what a robot standing there means. */
+    const waving = waveT && !calmQ.matches;
+    zugBot.innerHTML = zugSVG(armsUp ? ZUG_WAVE : ZUG_STAND, waving ? armsUp : true, 3);
+    /* One sprite pixel off the floor, snapped rather than tweened — a half
+       pixel is the one thing pixel art cannot survive. */
+    zugBot.style.transform = armsUp ? "translateY(-3px)" : "none";
+  }
+  /* 0.42s is the app's own beat. `calmQ` is re-read here rather than latched,
+     the way every other motion on this page reads it. */
+  function beat() {
+    if (calmQ.matches) { if (armsUp) { armsUp = false; paintZug(); } return; }
+    armsUp = !armsUp;
+    paintZug();
+  }
+  function waveOn() { if (!waveT) waveT = setInterval(beat, 420); }
+  function waveOff() { clearInterval(waveT); waveT = 0; armsUp = false; paintZug(); }
+  paintZug();
+  /* Stopped while the pill is off screen, for the reason the app budgets the
+     mascot's hop: nothing should animate for nobody. */
+  if (typeof IntersectionObserver === "function") {
+    new IntersectionObserver((entries) => {
+      entries.some((e) => e.isIntersecting) ? waveOn() : waveOff();
+    }).observe(zugBot);
+  } else {
+    waveOn();
+  }
 }
 
 newGame();
