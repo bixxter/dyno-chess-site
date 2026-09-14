@@ -3,6 +3,67 @@
     <channel>
         <title>Dyno Chess</title>
         <item>
+            <title>0.7.5</title>
+            <pubDate>Mon, 14 Sep 2026 12:43:33 +0500</pubDate>
+            <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
+            <sparkle:version>13</sparkle:version>
+            <sparkle:shortVersionString>0.7.5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[A robot called Zug now lives in the notch, and the light beside the mascot
+stops being on all the time.
+
+## A robot called Zug
+
+When Claude Code or Codex stops and asks for permission, the right side of the
+pill now grows a small pixel robot. It waves, it hops, and the light on its
+antenna blinks while it waits for you. Answer the request and it goes.
+
+It is called Zug, after Zugzwang — the position where you are obliged to move.
+That is the whole of what it stands for: something has stopped, and it cannot go
+on until you answer.
+
+It also has a voice: two rising blips, about a quarter of a second, the moment
+the request lands. The robot only works if you are looking at the notch, and
+nobody waiting on a permission prompt is — you are looking at the terminal that
+just went quiet, usually on another screen. The sound is the half of the signal
+that reaches you there. Turn it off with Settings ▸ Sounds, along with every
+other sound the app makes.
+
+The robot answers for the other two agent states as well, in colour rather than
+in movement: green and standing still when an agent has finished its turn, red
+with its antenna dark when one has died. Only a blocked agent waves, and only a
+blocked agent makes a sound — a finished agent is not made more finished by
+jumping up and down.
+
+Everything the robot replaces was a coloured bar. A chess mark comments on the
+board you are already looking at; an agent is a different machine in a different
+window, and a shape carries that difference from across the desk in a way a
+colour cannot.
+
+## The light stops being on all the time
+
+The green mark for "your move" was lit whenever a game existed — and a game
+exists from the moment the app launches, because it restores the last one or
+starts a fresh board. So the mark was on over an untouched home screen, and it
+stayed on for as long as a half-finished game sat there, which for most people
+meant permanently.
+
+It is now a call rather than a state. Every move lights it, and it goes out
+about three quarters of a minute after the last thing that happened — so it is
+up for the whole of a game you are playing, and dark on a board you have walked
+away from. The next move brings it back.
+
+The mascot is unchanged and still says whether a game is on: blue with no game,
+green with one, whether or not the mark beside it has anything to add.
+]]></description>
+            <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.5/DynoChess.dmg" length="138215232" type="application/octet-stream" sparkle:edSignature="BWl7ngZ5hBJtPVppjdUHPN63LT2jYg7JvxOEgdFdoczlKBctXBOHkpFwI4A+/8O/0W1WMufkz53Emk1npbT/DA=="/>
+            <sparkle:deltas>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.5/DynoChess13-12.delta" sparkle:deltaFrom="12" length="600042" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="EnRS6crig5SginYhQhmhen0Ay+OLQq0bM/JT+pHpbTOoyMF7Jbvi89uHY9r9h/Cqm50t/lD3WerAfx5oO1NhDQ=="/>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.5/DynoChess13-11.delta" sparkle:deltaFrom="11" length="660194" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="yhSFp6hzG2Wm5RsYNq3yMjdP0ClLTrTzXRs56BVl1C2ko75qV/4I7cIeMp7EtcOpZrKMcRWIrOy/CdsqO4i/Aw=="/>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.5/DynoChess13-10.delta" sparkle:deltaFrom="10" length="934686" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="CO/mLm0QCCaR+UWbongcEALPbKK12zznV2ppJXT6n9rweMYwT8CpWc8SI1YmpFjp3S8escVIiSEXUKhZGfieBw=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>0.7.4</title>
             <pubDate>Mon, 14 Sep 2026 02:50:19 +0500</pubDate>
             <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
