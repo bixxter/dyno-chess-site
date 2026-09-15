@@ -3,6 +3,53 @@
     <channel>
         <title>Dyno Chess</title>
         <item>
+            <title>0.7.7</title>
+            <pubDate>Wed, 16 Sep 2026 01:27:10 +0500</pubDate>
+            <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
+            <sparkle:version>15</sparkle:version>
+            <sparkle:shortVersionString>0.7.7</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[Answering an agent from the notch is free and unlimited now, for everybody.
+
+## The daily limit on approvals is gone
+
+Approve, Always allow and Reject used to be metered: five a day without Pro, and
+once those were spent the request still appeared in the strip but the answer had
+to happen back in the terminal. That limit is removed. There is no counter, no
+allowance, and nothing about answering an agent that depends on whether you have
+bought anything.
+
+Two reasons, and the second is the one that settled it.
+
+The first is that this is the part of the app people install it for. Putting a
+meter on it charged for the one thing worth telling a colleague about.
+
+The second is where that counter was drawn. It sat in the notch, and the notch
+is on screen during a screen share. "1 free left today" is not an advertisement;
+it is something you have to explain to whoever is watching your screen. Nothing
+that keeps score belongs in a place you cannot close.
+
+Rejections were already free, and stay free — nobody should hesitate over
+stopping an agent.
+
+## What Pro is, then
+
+Unchanged, and all of it additive: board themes, unlimited tactics with the
+rating ladder and the per-theme weaknesses behind them, and the move-by-move
+breakdown of a finished game.
+
+That leaves the free app as it always was rather than a trimmed one. Every
+opponent from 400 to 3000, unlimited undo, hot-seat, PGN in and out, the agent
+strip, and now every approval you care to make.
+]]></description>
+            <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.7/DynoChess.dmg" length="138201198" type="application/octet-stream" sparkle:edSignature="YV4Y1RP/fAwfKwEOhfvK6EInSizMX25LTl7f1P7edynCW95LMb8cw3kKIu57JAM0roz3F1Ej41YXdr3EcYMqDw=="/>
+            <sparkle:deltas>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.7/DynoChess15-14.delta" sparkle:deltaFrom="14" length="528162" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="pRJcsoxyrT7GZHSX9sbm2wUKHmFSwkQQ81WlrjAfUjS1ocDE7ZJ0cyzhScmzKwS0/bOFCMsSuPH6AgVH59suBA=="/>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.7/DynoChess15-13.delta" sparkle:deltaFrom="13" length="617142" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="IX0LqH2Gp/m1g3WE63I237ljHFNn93d2FQ9ueApcxB1clvNx2rbYlJuoqhqFIwkWkKZ4QHCylHmgLQWlw4QgCA=="/>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.7/DynoChess15-12.delta" sparkle:deltaFrom="12" length="681186" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="Rvlzlao2PqDZSVhr0gv3dqMi1SrL9rYa1GR7BW6QWVQn96ubh2KHVLYL98ZLovSAHoeB13eDnYSH0R+hCk/wBQ=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>0.7.6</title>
             <pubDate>Mon, 14 Sep 2026 14:47:45 +0500</pubDate>
             <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
@@ -144,75 +191,6 @@ position stands.
             <sparkle:deltas>
                 <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.4/DynoChess12-11.delta" sparkle:deltaFrom="11" length="502086" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="EAwB67PsNIRpZnaeP5hpGJF5MJCKMtQTMK+sj/1b3F/SwLcx6KWVwao7GEKjb8cJaR6Bvy+nBHSlLv8oVQbaBQ=="/>
                 <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.4/DynoChess12-10.delta" sparkle:deltaFrom="10" length="818274" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="6SKoNU5hmR7pJJtiKAIxi9N0A2Eyv8yf/ilPhzW387gmG3To8qn8oxtIli/nP2LsNPA04Hfb4vbLrng7buPuDQ=="/>
-            </sparkle:deltas>
-        </item>
-        <item>
-            <title>0.7.3</title>
-            <pubDate>Mon, 14 Sep 2026 01:05:39 +0500</pubDate>
-            <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
-            <sparkle:version>11</sparkle:version>
-            <sparkle:shortVersionString>0.7.3</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <description sparkle:format="markdown"><![CDATA[The notch stops looking like it is recording you, and puzzle pieces move.
-
-## The light in the notch
-
-The small round lamp on the right side of the pill is gone. It sat in the shape,
-the size and very nearly the place of the Mac's own camera-in-use indicator, and
-enough people read it as "this app is watching you" that the shape had to go.
-
-In its place is a short capsule, and it is lit only when you are actually
-wanted: your move, a check or a finished game, or an agent waiting on an answer.
-When nothing needs you — idle, or while the engine is thinking — the right ear
-is simply empty. The mascot still tells the two apart: blue at rest, green once
-a game is on.
-
-Nothing about what the app can see changed here, because there was never
-anything to change. Dyno Chess carries no camera, microphone or network
-entitlement at all, and you can check that yourself in a second:
-
-`codesign -d --entitlements :- '/Applications/Dyno Chess.app'`
-
-## Puzzles play their moves
-
-Puzzle pieces used to change squares between two frames. The board would open
-with the opponent's move already made, and after a correct answer the reply
-simply appeared — which meant working out what had happened before you could
-start working out what to do about it.
-
-Both of those now travel across the board the way the engine's moves always have
-in a game: the piece lifts, crosses, and sets down, and a captured piece stays
-whole long enough to watch it go. Your own moves are not replayed back at you.
-
-If you have Reduce Motion switched on in System Settings, the board stays
-instant — as it should.
-
-## The panel opens in two beats
-
-Hovering the island used to play one chord: the notch sprang open while the
-panel faded in on the same spring, re-laying out the board at every width the
-spring passed through. What that looked like was the content squeezing itself
-into place from the right while the notch was still moving.
-
-Now the panel is laid out once at its final size and the notch grows to uncover
-it, so the shape opens and *then* the panel arrives. Closing is the mirror: the
-panel leaves first and the notch closes over the space.
-
-## The home screen says which game
-
-The result card above New Game used to read "Checkmate · Black wins" with no
-indication of which game it meant — awkward on a screen you also walk back to
-mid-session. It now carries a "LAST GAME" label and how long ago it finished,
-kept true on the minute rather than written once and left to rot.
-
-The stats beside it became three rings over one denominator, which shows the
-win/draw/loss split before you read a digit. No win rate is shown until
-something has actually been decided; an all-hot-seat history used to read as a
-losing streak that never happened.
-]]></description>
-            <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.3/DynoChess.dmg" length="138197053" type="application/octet-stream" sparkle:edSignature="t1QJ4m576aUZ7JSJJh0L8BBkGOZQ534sF6VWwSQ2MHsWTXnRmXWXAapcesPgTQ58jNvnq4WlbTMpG2ZpUHbSDQ=="/>
-            <sparkle:deltas>
-                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.3/DynoChess11-10.delta" sparkle:deltaFrom="10" length="867102" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="8kSnzOShKoY9WVdlQePSa5EP9/oiBg0Kd1eTFV+OW7Q0ezrBsw1brMHerBvICznrEilir90TiJ+2mIgHugJfDg=="/>
             </sparkle:deltas>
         </item>
     </channel>
