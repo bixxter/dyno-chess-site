@@ -101,7 +101,7 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
 
 <main class="wrap">
   <h1>Privacy, terms &amp; refunds</h1>
-  <p class="updated">Last updated 12 September 2026</p>
+  <p class="updated">Last updated 16 September 2026</p>
 
   <ul class="toc">
     <li><a href="#privacy">Privacy policy</a></li>
@@ -221,6 +221,13 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(128,128,128,
   <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub
   Privacy Statement</a>. We do not have access to those logs. The app's daily update check
   asks this same host for one file, so it lands in the same logs and nowhere else.</p>
+
+  <p>One picture on the home page is not served from here. The <b>TinyShelf</b> badge in the
+  footer is the directory's own file, held on <code>tinyshelf.co</code>, and loading the page
+  asks their server for it — so their logs get what any web request carries: an IP address, a
+  User-Agent and the address of the page that asked. It sets no cookie, it reports nothing back
+  to us, and we learn nothing from it. Blocking <code>tinyshelf.co</code> removes the badge and
+  changes nothing else on the page.</p>
 
   <p>The page also counts its visitors, using <b>Umami</b>. This is the one part of Dyno
   Chess that measures anybody at all, so here is the whole of it. It records which page you

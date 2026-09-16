@@ -500,6 +500,15 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
 }
 .legal a { padding-block: .35rem; }
 
+/* The directory badge. Their artwork, served from their host, because the
+   followable link on the listing is offered in exchange for showing it and they
+   re-check it. Width and height stay on the <img> so the box is reserved before
+   the file arrives and the wordmark below it never jumps. Nothing here keys off
+   the theme: the plate is near-black and carries its own offset shadow, so it
+   reads on the light paper and keeps a visible edge on the dark one. */
+.badge { margin: 2rem 0 0; line-height: 0; }
+.badge img { max-width: 100%; height: auto; }
+
 /* Two lines of supporting copy that used to carry their colour as an inline
    style, which no media query can reach past. */
 .quiet { color: var(--ink-faint); }
@@ -1214,6 +1223,12 @@ details p { margin: .75rem 0 0; color: var(--ink-soft); max-width: 68ch; font-si
     data-umami-event="releases" data-umami-event-from="footer-previous">previous
     version</a> stays on the releases page. Something wrong? <a href="mailto:dyno@bixxter.com"
     data-umami-event="email" data-umami-event-from="footer">dyno@bixxter.com</a>.
+  </p>
+  <p class="badge">
+    <a href="https://www.tinyshelf.co/?ref=dynochess.bixxter.com" title="Featured on TinyShelf">
+      <img src="https://www.tinyshelf.co/badge/tinyshelf-badge-dark-f4d1216a.svg"
+           alt="Featured on TinyShelf" width="216" height="64" loading="lazy" decoding="async">
+    </a>
   </p>
   <p class="wordmark" aria-hidden="true">Dyno Chess</p>
 </footer>
