@@ -3,6 +3,86 @@
     <channel>
         <title>Dyno Chess</title>
         <item>
+            <title>0.7.8</title>
+            <pubDate>Wed, 30 Sep 2026 16:02:01 +0500</pubDate>
+            <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
+            <sparkle:version>16</sparkle:version>
+            <sparkle:shortVersionString>0.7.8</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[The first time Dyno Chess opens, a small card under the notch shows you how it works, on the notch itself.
+
+## A first run you do, not watch
+
+Until now a new install got a black pill at the top of the screen and nothing
+else. No window, no Dock icon, no word about the one thing you have to do, which
+is move the pointer into the notch. People did not find it.
+
+So the first launch now puts a card under the notch that asks you to do exactly
+that, and then to play one move, and then to move away. It happens on the real
+notch and in your real first game. There is no tour and no picture of a notch to
+look at. When the notch closes behind you, that was the whole lesson.
+
+The target is small, about the width of the camera housing, so the card helps if
+you miss: it says so when the pointer is close but beside it, the notch accepts
+the whole pill for as long as the card is up, and after fifteen seconds there is
+a button that opens it for you. Skip works on every step.
+
+## Zug, rehearsed
+
+If Claude Code or Codex is on your Mac, Zug turns up in the notch with a request
+that asks for nothing, so you can answer one before a real one arrives. It is
+labelled as a rehearsal, and nothing runs whatever you press. If a real request
+lands in the meantime, the rehearsal steps aside.
+
+Then the card offers to install the hook, naming the file it edits. It is the
+same Install as in Settings ▸ Agents: a backup first, your own entries left
+alone, and Remove takes out only ours. Answering from the notch stays free and
+unlimited, with or without Pro.
+
+## Your board, and a date
+
+You pick a board on a preview of your own position. Every board is on during the
+14 days of Pro, and a Pro board you choose comes back the moment you buy.
+
+The last card says the date Pro becomes Free, and what Free keeps. It also offers
+to open Dyno Chess at login, and only does that if you press Done with the switch
+on. A notch app that is not running is just a notch.
+
+## When the trial ends, it says so
+
+When the 14 days ran out, the board went back to Classic and puzzles to three a
+day, and nothing said why. A change nobody explains reads as a bug. Now a card
+under the notch says it once: Dyno Chess is on Free, nothing was charged, here is
+what stays. It never appears inside the notch or over the board, and it never
+appears twice.
+
+## Smaller things
+
+- No notification prompt at first launch. Permission is asked when you turn on
+  "Notify on your turn", or when an update is first found.
+- "Your move" notifications no longer arrive while you are playing in the open
+  notch.
+- Opening Dyno Chess again from Applications or Spotlight while it runs now opens
+  Settings, on the License tab if you have not bought yet. That is where the
+  purchase email sends you.
+- ⌘, opens the real Settings window. It used to open one that said licensing was
+  unavailable.
+- Settings ▸ General has an Open at login switch.
+- Activating a key now says so: "Pro is on."
+- Clicking in Settings while the notch was open used to click twice. It clicks
+  once.
+
+If you already use Dyno Chess, none of the first-run cards will appear after this
+update.
+]]></description>
+            <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.8/DynoChess.dmg" length="138533006" type="application/octet-stream" sparkle:edSignature="buOOnbPDNHKBTxAQB4HJk1RqateyKp1ABM2Lkfo8hUQuEoTRpFaZ1kjJvHkT/swr9lEJx5ZdFstvufCKg34iAg=="/>
+            <sparkle:deltas>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.8/DynoChess16-15.delta" sparkle:deltaFrom="15" length="1205954" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="4REiDviBGQXpZRfj6gO55fGPIq3iloHOFROW5YaZnU2H+aXnXbkBVDssPwrDwhdFJl4wptSvbzCS6ZuZrZpYDw=="/>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.8/DynoChess16-14.delta" sparkle:deltaFrom="14" length="1212338" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="NMraFc5StgTSzSM5dSKa1lDE8KngsFNXFYksX95zKIwvph7vqNIk9Zy4vmm6HVQyuLufgBfemOWpU4J5NkDDAQ=="/>
+                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.8/DynoChess16-13.delta" sparkle:deltaFrom="13" length="1245058" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="bqq/wZQiLhzREOK3/6lGLwsOXBy3XsOYs4bR9GsfhU9BmHTLdJEccK2SekfbzJTSDY2kBlivxJlQXQC1D2C9Bg=="/>
+            </sparkle:deltas>
+        </item>
+        <item>
             <title>0.7.7</title>
             <pubDate>Wed, 16 Sep 2026 01:27:10 +0500</pubDate>
             <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
@@ -159,38 +239,6 @@ green with one, whether or not the mark beside it has anything to add.
                 <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.5/DynoChess13-12.delta" sparkle:deltaFrom="12" length="600042" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="EnRS6crig5SginYhQhmhen0Ay+OLQq0bM/JT+pHpbTOoyMF7Jbvi89uHY9r9h/Cqm50t/lD3WerAfx5oO1NhDQ=="/>
                 <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.5/DynoChess13-11.delta" sparkle:deltaFrom="11" length="660194" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="yhSFp6hzG2Wm5RsYNq3yMjdP0ClLTrTzXRs56BVl1C2ko75qV/4I7cIeMp7EtcOpZrKMcRWIrOy/CdsqO4i/Aw=="/>
                 <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.5/DynoChess13-10.delta" sparkle:deltaFrom="10" length="934686" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="CO/mLm0QCCaR+UWbongcEALPbKK12zznV2ppJXT6n9rweMYwT8CpWc8SI1YmpFjp3S8escVIiSEXUKhZGfieBw=="/>
-            </sparkle:deltas>
-        </item>
-        <item>
-            <title>0.7.4</title>
-            <pubDate>Mon, 14 Sep 2026 02:50:19 +0500</pubDate>
-            <sparkle:fullReleaseNotesLink>https://github.com/bixxter/dyno-chess-releases/releases</sparkle:fullReleaseNotesLink>
-            <sparkle:version>12</sparkle:version>
-            <sparkle:shortVersionString>0.7.4</sparkle:shortVersionString>
-            <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <description sparkle:format="markdown"><![CDATA[The buttons under the board sit evenly again.
-
-## Hint stops holding a gap open
-
-The Hint button used to count: press it once and it read "Hint 1/3", again for
-"Hint 2/3", and so on round the three moves it offers. To keep Undo and Resign
-from sliding sideways as that caption grew, the row reserved room for the widest
-version of it from the moment the board opened — so before you pressed anything
-there was a gap in front of Undo about twice the size of the one after it.
-
-The count is gone and so is the reserved room. Every button now takes exactly
-the width of its own label, and the spacing between Hint, Undo and Resign is the
-same all the way across.
-
-Nothing about the hint itself changed. It still offers three candidate moves at
-the position you are in, still moves to the next one each time you press, still
-wraps round to the first after the third, and still never runs out while the
-position stands.
-]]></description>
-            <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.4/DynoChess.dmg" length="138191121" type="application/octet-stream" sparkle:edSignature="OJqyqniaYCpLPnD9MRr7tjj0SvUqCqlSQRUIdaynz1dBvQgBk5F8BAMyIP1wdGkUJ5ad3DCnJ2aJUo8aC/mKBg=="/>
-            <sparkle:deltas>
-                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.4/DynoChess12-11.delta" sparkle:deltaFrom="11" length="502086" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="EAwB67PsNIRpZnaeP5hpGJF5MJCKMtQTMK+sj/1b3F/SwLcx6KWVwao7GEKjb8cJaR6Bvy+nBHSlLv8oVQbaBQ=="/>
-                <enclosure url="https://github.com/bixxter/dyno-chess-releases/releases/download/v0.7.4/DynoChess12-10.delta" sparkle:deltaFrom="10" length="818274" type="application/octet-stream" sparkle:deltaFromSparkleExecutableSize="977808" sparkle:deltaFromSparkleLocales="de,he,ar,el,ja,fa,uk" sparkle:edSignature="6SKoNU5hmR7pJJtiKAIxi9N0A2Eyv8yf/ilPhzW387gmG3To8qn8oxtIli/nP2LsNPA04Hfb4vbLrng7buPuDQ=="/>
             </sparkle:deltas>
         </item>
     </channel>
